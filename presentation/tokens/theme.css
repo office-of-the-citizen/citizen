@@ -1,0 +1,48 @@
+/**
+ * Citizen Application design tokens — the single visual authority.
+ *
+ * Every colour, radius, shadow and font used by the application resolves
+ * here. Designers retheme the application by editing this sheet; no React
+ * component may hardcode a visual value.
+ *
+ * Colour values are R G B triplets so Tailwind can compose alpha.
+ */
+:root {
+  /* Civic green — primary identity */
+  --c-primary: 14 138 76; /* #0e8a4c */
+  --c-primary-deep: 9 92 51; /* #095c33 */
+  --c-primary-soft: 231 246 238; /* #e7f6ee */
+
+  /* Category accents (timeline, relationship chips) */
+  --c-accent-blue: 37 99 235; /* #2563eb */
+  --c-accent-blue-soft: 239 246 255; /* #eff6ff */
+  --c-accent-purple: 124 58 237; /* #7c3aed */
+  --c-accent-purple-soft: 245 243 255; /* #f5f3ff */
+  --c-accent-amber: 217 119 6; /* #d97706 */
+  --c-accent-amber-soft: 255 251 235; /* #fffbeb */
+
+  /* Text */
+  --c-ink: 15 23 42; /* #0f172a */
+  --c-ink-soft: 71 85 105; /* #475569 */
+  --c-ink-faint: 148 163 184; /* #94a3b8 */
+
+  /* Surfaces */
+  --c-surface: 255 255 255;
+  --c-surface-sunken: 244 247 245; /* #f4f7f5 */
+  --c-line: 226 232 240; /* #e2e8f0 */
+
+  /* Governed UNKNOWN posture (matches OS status registry neutral) */
+  --c-unknown: 107 114 128; /* #6b7280 */
+
+  /* Geometry */
+  --r-card: 1.25rem;
+  --r-chip: 999px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.06);
+  --shadow-nav: 0 -4px 20px rgb(15 23 42 / 0.08);
+
+  /* Type */
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
