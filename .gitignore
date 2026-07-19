@@ -3,3 +3,6 @@ node_modules/
 out/
 *.tsbuildinfo
 .env.local
+
+# macOS
+.DS_Store
