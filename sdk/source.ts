@@ -102,7 +102,8 @@ export function projectionSource(): ProjectionSource {
   }
   const dir =
     process.env.CAOS_PROJECTION_DIR ??
-    path.resolve(process.cwd(), "..", "..", "runtime", "state", "projections");
+    // Sibling layout: citizen/ next to CAOS/
+    path.resolve(process.cwd(), "..", "CAOS", "runtime", "state", "projections");
   cached = new FileProjectionSource(dir);
   return cached;
 }
