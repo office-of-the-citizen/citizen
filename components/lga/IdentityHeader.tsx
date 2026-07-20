@@ -5,25 +5,29 @@ import { motion } from "framer-motion";
 
 import type { PublicRecord } from "@/sdk/contracts";
 import { AvatarArt, HeaderArt, SealArt } from "@/presentation/placeholders/art";
-import { mediaFor } from "@/presentation/media-manifest";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeIn } from "@/presentation/animations/motion";
 import { HomeAction } from "./HomeAction";
 
 /**
  * Identity layer — hero imagery, location chip, seal and place name.
- * Media resolves: manifest override → projected identity media → placeholder
- * artwork (Founder media doctrine). The place, not the office holder, is the
- * dominant identity.
+ * Media resolves: projected identity media → placeholder artwork (Founder
+ * media doctrine). The place, not the office holder, is the dominant
+ * identity. The location line derives from the projected breadcrumb chain;
+ * the application names no jurisdiction itself.
  */
 export function IdentityHeader({ record }: { record: PublicRecord }) {
   const name = record.display.subject_name;
   const owner = record.display.owner?.name ?? null;
-  const media = mediaFor(record.slug);
-  const stateMedia = record.display.owner ? mediaFor(record.display.owner.object_id) : {};
-  const headerUrl = media.header ?? record.identity?.header?.locator ?? stateMedia.header ?? null;
-  const logoUrl = media.logo ?? record.identity?.logo?.locator ?? stateMedia.logo ?? null;
+  const headerUrl = record.identity?.header?.locator ?? null;
+  const logoUrl = record.identity?.logo?.locator ?? null;
   const seed = name.length + (owner?.length ?? 0);
+  // Breadcrumb is root-first: [Nigeria, Owner State, Subject]. The location
+  // line under the title reads the chain above the subject, nearest first.
+  const lineage = record.display.breadcrumb
+    .slice(0, -1)
+    .map((b) => b.name)
+    .reverse();
 
   return (
     <motion.header
@@ -50,7 +54,7 @@ export function IdentityHeader({ record }: { record: PublicRecord }) {
             <Icon name="pin" size={16} />
             <span className="truncate">
               {name}
-              {owner ? `, ${owner.replace(/ State$/, " State")}` : ""}
+              {owner ? `, ${owner}` : ""}
             </span>
             <Icon name="chevron-down" size={14} className="shrink-0 opacity-80" />
           </Link>
@@ -93,7 +97,9 @@ export function IdentityHeader({ record }: { record: PublicRecord }) {
           <h1 className="text-[2rem] font-extrabold leading-tight text-white drop-shadow-sm">
             {name}
           </h1>
-          {owner ? <p className="mt-0.5 text-base text-white/85">{owner}, Nigeria</p> : null}
+          {lineage.length ? (
+            <p className="mt-0.5 text-base text-white/85">{lineage.join(", ")}</p>
+          ) : null}
         </div>
       </div>
     </motion.header>

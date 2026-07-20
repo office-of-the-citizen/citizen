@@ -56,6 +56,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     chairman: {
       section_code: "chairman",
       question: "Who is my Local Government Chairman?",
+      display_label: "Executive Chairman",
       layout_slot: "PRIMARY_FACTS",
       projection_form: "PERSON_ANSWER",
       claim_ref: "specimen-claim-1",
@@ -86,6 +87,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     assumed_office: {
       section_code: "assumed_office",
       question: "When did the Chairman assume office?",
+      display_label: "In Office Since",
       layout_slot: "PRIMARY_FACTS",
       projection_form: "DATE_ANSWER",
       claim_ref: "specimen-claim-2",
@@ -106,6 +108,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
   context: [
     {
       provider: "FEDERAL_EXECUTIVE_HEAD",
+      presentation: { icon: "OFFICE", accent_role: "GOVERNED_OBJECT", accent_hex: "#1d4ed8" },
       label: "President",
       layout_slot: "RELATIONSHIPS",
       data_origin: "REPOSITORY_REFERENCE",
@@ -119,6 +122,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     },
     {
       provider: "OWNER_EXECUTIVE_HEAD",
+      presentation: { icon: "OFFICE", accent_role: "VERIFIED", accent_hex: "#15803d" },
       label: "Governor",
       layout_slot: "RELATIONSHIPS",
       data_origin: "REPOSITORY_REFERENCE",
@@ -132,6 +136,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     },
     {
       provider: "STATE_ASSEMBLY_REPRESENTATION",
+      presentation: { icon: "CONSTITUENCY", accent_role: "VERIFIED", accent_hex: "#15803d" },
       label: "State Assembly",
       layout_slot: "RELATIONSHIPS",
       data_origin: "REPOSITORY_REFERENCE",
@@ -145,6 +150,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     },
     {
       provider: "FEDERAL_CONSTITUENCY_REPRESENTATION",
+      presentation: { icon: "CONSTITUENCY", accent_role: "VERIFIED", accent_hex: "#15803d" },
       label: "House of Reps",
       layout_slot: "RELATIONSHIPS",
       data_origin: "REPOSITORY_REFERENCE",
@@ -158,6 +164,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     },
     {
       provider: "SENATORIAL_REPRESENTATION",
+      presentation: { icon: "CONSTITUENCY", accent_role: "VERIFIED", accent_hex: "#15803d" },
       label: "Senator",
       layout_slot: "RELATIONSHIPS",
       data_origin: "REPOSITORY_REFERENCE",
@@ -173,6 +180,8 @@ export const SPECIMEN_RECORD: PublicRecord = {
   civic_journey: [],
   budget: {
     posture: "APPROVED_LATEST",
+    posture_label: "Latest Approved Budget",
+    total_label: "Total Approved Budget",
     fiscal_year: "2024",
     currency: "NGN",
     total: 5_420_000_000,
@@ -187,6 +196,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     {
       activity_code: "specimen-1",
       category: "BUDGET",
+      presentation: { icon: "BUDGET", colour_role: "VERIFIED", colour_hex: "#15803d" },
       occurred_at: "2024-05-16",
       title: "2024 Budget Approved — ₦5.42 Billion",
       summary: "Executive Chairman assented to the budget",
@@ -196,6 +206,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     {
       activity_code: "specimen-2",
       category: "PROJECT",
+      presentation: { icon: "PROJECT", colour_role: "GOVERNED_OBJECT", colour_hex: "#1d4ed8" },
       occurred_at: "2024-05-10",
       title: "2km Road Construction — Elewuro",
       summary: "45% completion recorded",
@@ -205,6 +216,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     {
       activity_code: "specimen-3",
       category: "JUDGEMENT",
+      presentation: { icon: "COURT", colour_role: "GOVERNED_OBJECT", colour_hex: "#1d4ed8" },
       occurred_at: "2024-05-03",
       title: "High Court Ruling on Land Dispute",
       summary: "In favour of the Local Government",
@@ -214,6 +226,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
     {
       activity_code: "specimen-4",
       category: "DOCUMENT",
+      presentation: { icon: "GAZETTE", colour_role: "ATTENTION", colour_hex: "#b45309" },
       occurred_at: "2024-04-28",
       title: "Audit Report 2023 Published",
       summary: "Source: Oyo State Audit Service",
@@ -222,10 +235,54 @@ export const SPECIMEN_RECORD: PublicRecord = {
     },
   ],
   identity: null,
+  placeholders: {
+    MISSING_PORTRAIT: {
+      title: "Official photograph unavailable",
+      body: "This public record is awaiting an official photograph.",
+    },
+    MISSING_HEADER: {
+      title: "Awaiting official imagery",
+      body: "This community's public record is awaiting official imagery.",
+    },
+    MISSING_LOGO: {
+      title: "Official emblem unavailable",
+      body: "No official government emblem has been admitted yet.",
+    },
+    MISSING_BUDGET: {
+      title: "No budget admitted yet",
+      body: "When a budget for this Local Government is admitted into the public record, it will appear here with its fiscal year and breakdown.",
+    },
+    MISSING_TIMELINE: {
+      title: "No public activity recorded yet",
+      body: "Budgets, projects, judgements and documents appear here the moment they enter the public record.",
+    },
+    MISSING_RELATIONSHIP: {
+      title: "Not yet on record",
+      body: "This office is awaiting a governed public record.",
+    },
+    MISSING_FACT: {
+      title: "Not yet on record",
+      body: "This fact is awaiting a governed public record.",
+    },
+    MISSING_TERM: {
+      title: "Not on record",
+      body: "This date is awaiting a governed public record.",
+    },
+  },
+  vocabulary: {
+    PEOPLE_RESPONSIBLE: "People responsible for {name}",
+    TERM_END: "Term Expires",
+    BUDGET_REGION_TITLE: "Budget",
+    ACTIVITY_REGION_TITLE: "Latest Updates",
+    VIEW_ALL: "View all",
+    VIEW_DETAILS: "View details",
+    EVIDENCE_TITLE: "Where this answer comes from",
+    CIVIC_JOURNEY_TITLE: "Understanding your Local Government",
+  },
   provenance: {
     built_at: "2026-07-18T00:00:00.000Z",
     build_input_hash: "sha256:specimen-design-fixture",
-    projection_version: 1,
+    projection_version: 2,
     builder: "design.specimen",
   },
 };

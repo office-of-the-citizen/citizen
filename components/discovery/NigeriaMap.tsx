@@ -2,16 +2,28 @@
 
 /**
  * Stylised presentation map of Nigeria — NOT GIS, NOT boundary truth.
- * Geometry: @svg-maps/nigeria (CC-BY-4.0), crosswalked to CAOS state object
- * ids. The map renders ONLY from the shared discovery store; taps dispatch
- * into the same store the dropdown and carousel use (one interaction model).
+ * Geometry: @svg-maps/nigeria (CC-BY-4.0), joined to the navigation
+ * projection by the OS-emitted group_code. The map renders ONLY from the
+ * shared discovery store; taps dispatch into the same store the dropdown
+ * and carousel use (one interaction model).
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import nigeriaMap from "@svg-maps/nigeria";
 import { animate, useReducedMotion } from "framer-motion";
 
-import { SVG_TO_CAOS, CAOS_TO_SVG } from "@/assets/map/state-crosswalk";
+import type { NavigationIndex } from "@/sdk/contracts";
 import { useDiscoveryStore } from "@/lib/selection-store";
+
+/**
+ * Geometry-library quirks only: where @svg-maps/nigeria's location id
+ * differs from the OS group_code. Pure presentation, no constitutional ids.
+ */
+const SVG_ID_QUIRKS: Record<string, string> = {
+  fct: "federal-capital-territory",
+  nassarawa: "nasarawa", // upstream library typo
+};
+
+const svgIdToGroupCode = (svgId: string): string => SVG_ID_QUIRKS[svgId] ?? svgId;
 
 interface MapLocation {
   id: string;
@@ -30,14 +42,34 @@ const FULL_VB = MAP.viewBox.split(" ").map(Number) as [number, number, number, n
 type ViewBox = { x: number; y: number; w: number; h: number };
 const NATION_VB: ViewBox = { x: FULL_VB[0], y: FULL_VB[1], w: FULL_VB[2], h: FULL_VB[3] };
 
-export function NigeriaMap({ className }: { className?: string }) {
+export function NigeriaMap({
+  navigation,
+  className,
+}: {
+  navigation: NavigationIndex;
+  className?: string;
+}) {
   const { mode, focusedStateId, focusState } = useDiscoveryStore();
   const reduceMotion = useReducedMotion();
   const pathRefs = useRef<Map<string, SVGPathElement>>(new Map());
   const [viewBox, setViewBox] = useState<ViewBox>(NATION_VB);
   const vbRef = useRef<ViewBox>(NATION_VB);
 
-  const focusedSvgId = focusedStateId ? (CAOS_TO_SVG[focusedStateId] ?? null) : null;
+  // Join geometry ↔ navigation on the OS-emitted group_code.
+  const { codeToStateId, stateIdToSvgId } = useMemo(() => {
+    const codeToStateId = new Map<string, string>();
+    for (const g of navigation.groups) {
+      if (g.group_code) codeToStateId.set(g.group_code, g.group_object_id);
+    }
+    const stateIdToSvgId = new Map<string, string>();
+    for (const loc of MAP.locations) {
+      const stateId = codeToStateId.get(svgIdToGroupCode(loc.id));
+      if (stateId) stateIdToSvgId.set(stateId, loc.id);
+    }
+    return { codeToStateId, stateIdToSvgId };
+  }, [navigation]);
+
+  const focusedSvgId = focusedStateId ? (stateIdToSvgId.get(focusedStateId) ?? null) : null;
 
   useEffect(() => {
     let target = NATION_VB;
@@ -87,7 +119,7 @@ export function NigeriaMap({ className }: { className?: string }) {
       aria-label="Map of Nigeria's states"
     >
       {MAP.locations.map((loc) => {
-        const caosId = SVG_TO_CAOS[loc.id];
+        const caosId = codeToStateId.get(svgIdToGroupCode(loc.id));
         const isFocused = focusedSvgId === loc.id;
         const dimmed = mode === "STATE" && !isFocused;
         return (

@@ -23,13 +23,21 @@ import { CaosClient } from "@office-of-the-citizen/caos-sdk";
 import {
   NavigationIndexSchema,
   PublicRecordSchema,
+  SearchResponseSchema,
   type NavigationIndex,
   type PublicRecord,
+  type SearchResponse,
 } from "./contracts";
 
 export interface ProjectionSource {
   getRecord(recordType: string, slug: string): Promise<PublicRecord | null>;
   getNavigation(recordType: string): Promise<NavigationIndex | null>;
+  /**
+   * Engine 11 search over prepared public records. Null when the transport
+   * cannot search (file mode) — the application renders a governed
+   * unavailable state, never a reconstructed search of its own.
+   */
+  search(query: string, options?: { limit?: number }): Promise<SearchResponse | null>;
 }
 
 class FileProjectionSource implements ProjectionSource {
@@ -59,6 +67,10 @@ class FileProjectionSource implements ProjectionSource {
     if (raw === null) return null;
     const parsed = NavigationIndexSchema.safeParse(raw);
     return parsed.success ? parsed.data : null;
+  }
+
+  async search(): Promise<SearchResponse | null> {
+    return null; // Engine 11 lives behind the gateway; file mode cannot search.
   }
 }
 
@@ -90,6 +102,16 @@ class SdkProjectionSource implements ProjectionSource {
     try {
       const raw = await this.client.getPublicNavigation();
       const parsed = NavigationIndexSchema.safeParse(raw);
+      return parsed.success ? parsed.data : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async search(query: string, options?: { limit?: number }): Promise<SearchResponse | null> {
+    try {
+      const raw = await this.client.searchPublicRecords(query, { limit: options?.limit });
+      const parsed = SearchResponseSchema.safeParse(raw);
       return parsed.success ? parsed.data : null;
     } catch {
       return null;

@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import type { PublicRecord, RecordSection } from "@/sdk/contracts";
 import { PortraitArt } from "@/presentation/placeholders/art";
-import { placeholderCopy } from "@/presentation/placeholders/registry";
 import { Icon } from "@/presentation/icons/Icon";
 import { PresentationBadge } from "@/components/shared/PresentationBadge";
 import { formatDateLong } from "@/lib/format";
@@ -24,10 +23,10 @@ function evidenceEntries(section: RecordSection): EvidenceEntry[] {
 }
 
 /**
- * Executive Chairman card — rendered purely from the projected chairman
- * section. The verification chip, dates and name all arrive on the
- * projection; missing dates render governed absence copy, never guesses.
- * Tapping the card discloses the evidence behind the answer.
+ * Primary-facts card — rendered purely from the projected chairman section.
+ * The office title, term labels, verification chip, dates and name all
+ * arrive on the projection; missing values render governed absence copy,
+ * never guesses. Tapping the card discloses the evidence behind the answer.
  */
 export function ChairmanCard({ record }: { record: PublicRecord }) {
   const [open, setOpen] = useState(false);
@@ -40,7 +39,8 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
   const sinceDate = assumed?.answer ? formatDateLong(assumed.answer.value) : null;
   const termEnd = formatDateLong(chairman.valid_to);
   const entries = evidenceEntries(chairman);
-  const missingPortrait = placeholderCopy("MISSING_PORTRAIT");
+  const missingPortrait = record.placeholders?.MISSING_PORTRAIT;
+  const missingTerm = record.placeholders?.MISSING_TERM;
 
   return (
     <motion.button
@@ -53,7 +53,7 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
       <div className="flex items-stretch gap-4">
         <div
           className="h-28 w-24 shrink-0 overflow-hidden rounded-2xl bg-surface-sunken"
-          title={portrait ? undefined : missingPortrait.title}
+          title={portrait ? undefined : missingPortrait?.title}
         >
           {portrait ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -79,16 +79,16 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
           {name ? (
             <>
               <h2 className="mt-1.5 truncate text-xl font-extrabold text-ink">{name}</h2>
-              <p className="text-sm font-medium text-ink-soft">Executive Chairman</p>
+              {chairman.display_label ? (
+                <p className="text-sm font-medium text-ink-soft">{chairman.display_label}</p>
+              ) : null}
             </>
           ) : (
             <>
               <h2 className="mt-1.5 text-lg font-bold text-unknown">
-                {chairman.missingness?.label ?? "Not yet on record"}
+                {chairman.missingness?.label}
               </h2>
-              <p className="text-sm text-ink-faint">
-                {chairman.missingness?.explanation ?? "Awaiting a governed public record."}
-              </p>
+              <p className="text-sm text-ink-faint">{chairman.missingness?.explanation}</p>
             </>
           )}
         </div>
@@ -98,11 +98,16 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
         <div className="mt-4 flex divide-x divide-line border-t border-line pt-3">
           <TermCell
             icon="calendar"
-            label="In Office Since"
+            label={assumed?.display_label ?? ""}
             value={sinceDate}
-            fallback={assumed?.missingness?.label ?? "Not on record"}
+            fallback={assumed?.missingness?.label ?? missingTerm?.title ?? ""}
           />
-          <TermCell icon="calendar" label="Term Expires" value={termEnd} fallback="Not on record" />
+          <TermCell
+            icon="calendar"
+            label={record.vocabulary?.TERM_END ?? ""}
+            value={termEnd}
+            fallback={missingTerm?.title ?? ""}
+          />
         </div>
       ) : null}
 
@@ -117,7 +122,7 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
           >
             <div className="mt-3 rounded-2xl bg-surface-sunken p-3.5 text-xs leading-relaxed text-ink-soft">
               <p className="mb-1 font-bold uppercase tracking-wide text-ink-faint">
-                Where this answer comes from
+                {record.vocabulary?.EVIDENCE_TITLE}
               </p>
               {entries.length ? (
                 entries.map((entry, i) => (
@@ -133,7 +138,7 @@ export function ChairmanCard({ record }: { record: PublicRecord }) {
                   </div>
                 ))
               ) : (
-                <p>{chairman.missingness?.explanation ?? "No evidence packet projected."}</p>
+                <p>{chairman.missingness?.explanation}</p>
               )}
             </div>
           </motion.div>

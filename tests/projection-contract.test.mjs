@@ -1,10 +1,11 @@
 /**
  * Contract tests — run with `npm test` (node --test).
  *
- * 1. Crosswalk QA: every presentation-map geometry maps to a CAOS state and
- *    every navigation state has geometry (orphan rate must be 0).
+ * 1. Geometry join QA: every presentation-map geometry joins to a navigation
+ *    group via the OS-emitted group_code and every group has geometry
+ *    (orphan rate must be 0). The application owns no id crosswalk.
  * 2. The emitted projection artifacts satisfy the SDK contracts the
- *    application renders from.
+ *    application renders from, including the v2 presentation metadata.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -14,7 +15,6 @@ import { fileURLToPath } from "node:url";
 
 import nigeriaMap from "@svg-maps/nigeria";
 
-import crosswalk from "../assets/map/state-crosswalk.json" with { type: "json" };
 import { NavigationIndexSchema, PublicRecordSchema } from "../sdk/contracts.ts";
 
 const appDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -31,15 +31,17 @@ if (!projectionDir) {
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf-8"));
 
-test("crosswalk: every map geometry resolves to a CAOS state and back", () => {
-  const svgIds = nigeriaMap.locations.map((l) => l.id).sort();
-  const crosswalkIds = Object.keys(crosswalk).sort();
-  assert.deepEqual(crosswalkIds, svgIds, "crosswalk keys must exactly match map geometry ids");
+// Geometry-library quirks only — must mirror NigeriaMap.tsx.
+const SVG_ID_QUIRKS = { fct: "federal-capital-territory", nassarawa: "nasarawa" };
+const svgIdToGroupCode = (id) => SVG_ID_QUIRKS[id] ?? id;
 
+test("geometry joins navigation via OS-emitted group_code (no orphans)", () => {
   const nav = readJson(path.join(projectionDir, "prj_navigation", "lga.json"));
-  const navStateIds = nav.groups.map((g) => g.group_object_id).sort();
-  const caosIds = Object.values(crosswalk).sort();
-  assert.deepEqual(caosIds, navStateIds, "every navigation state must have exactly one geometry");
+  const codes = new Set(nav.groups.map((g) => g.group_code));
+  assert.equal(codes.size, nav.groups.length, "group_code must be unique per group");
+
+  const geometryCodes = nigeriaMap.locations.map((l) => svgIdToGroupCode(l.id)).sort();
+  assert.deepEqual(geometryCodes, [...codes].sort(), "geometry ↔ navigation must join 1:1");
 });
 
 test("navigation projection satisfies the SDK contract", () => {
@@ -48,9 +50,13 @@ test("navigation projection satisfies the SDK contract", () => {
   assert.ok(parsed.success, JSON.stringify(parsed.error?.issues?.slice(0, 3)));
   const total = parsed.data.groups.reduce((n, g) => n + g.records.length, 0);
   assert.ok(total >= 700, `expected ~774 LGA records, found ${total}`);
+  for (const g of parsed.data.groups) {
+    assert.ok(g.group_code, `group ${g.group_name} missing group_code`);
+    assert.ok(g.group_short_name, `group ${g.group_name} missing group_short_name`);
+  }
 });
 
-test("public records satisfy the SDK contract (sample)", () => {
+test("public records satisfy the SDK contract with v2 presentation metadata", () => {
   const dir = path.join(projectionDir, "prj_public_record", "lga");
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
   assert.ok(files.length >= 700, `expected ~774 records, found ${files.length}`);
@@ -59,5 +65,14 @@ test("public records satisfy the SDK contract (sample)", () => {
   for (const file of sample) {
     const parsed = PublicRecordSchema.safeParse(readJson(path.join(dir, file)));
     assert.ok(parsed.success, `${file}: ${JSON.stringify(parsed.error?.issues?.slice(0, 2))}`);
+    const record = parsed.data;
+    // The application renders these verbatim — they must arrive on the wire.
+    assert.ok(record.context.length >= 5, `${file}: expected 5 relationship slots`);
+    for (const entry of record.context) {
+      assert.ok(entry.presentation?.accent_role, `${file}: context entry missing presentation`);
+    }
+    assert.ok(record.sections.chairman.display_label, `${file}: chairman missing display_label`);
+    assert.ok(record.placeholders.MISSING_BUDGET?.title, `${file}: missing placeholders`);
+    assert.ok(record.vocabulary.TERM_END, `${file}: missing vocabulary`);
   }
 });

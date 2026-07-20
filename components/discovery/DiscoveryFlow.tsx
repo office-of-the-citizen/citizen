@@ -100,7 +100,7 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
 
       {/* The living map */}
       <div className="relative mt-2 px-3">
-        <NigeriaMap className="h-[19rem] w-full drop-shadow-sm" />
+        <NigeriaMap navigation={navigation} className="h-[19rem] w-full drop-shadow-sm" />
       </div>
 
       {/* Selection surfaces — carousel + dropdown drive the SAME store */}
@@ -242,7 +242,7 @@ function StateCarousel({ navigation }: { navigation: NavigationIndex }) {
                 : "bg-surface text-ink-soft shadow-card hover:text-ink",
             )}
           >
-            {g.group_name.replace(/ State$/, "")}
+            {g.group_short_name ?? g.group_name}
           </button>
         );
       })}
