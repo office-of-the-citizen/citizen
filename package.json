@@ -11,7 +11,7 @@
     "test": "node --experimental-strip-types --no-warnings --test \"tests/*.test.mjs\""
   },
   "dependencies": {
-    "@office-of-the-citizen/caos-sdk": "file:../caos-sdk",
+    "@office-of-the-citizen/caos-sdk": "^0.2.0",
     "@svg-maps/nigeria": "^2.0.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.2.0",
