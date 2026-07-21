@@ -4,12 +4,11 @@
  * Constitutional default: HTTP through the caos-sdk client against the
  * Engine 12 Gateway (Application → caos-sdk → Engine 12 → CAOS).
  *
- *   CAOS_GATEWAY_URL          → gateway root (default http://localhost:4000)
- *   CAOS_PROJECTION_API_URL   → legacy alias for the gateway root (kept for
- *                               existing deployments; same transport)
- *   CAOS_PROJECTION_DIR       → EXPLICIT opt-in: read-only consumption of
- *                               emitted projection artifacts on disk for
- *                               co-located deployments. Never the default.
+ *   CAOS_GATEWAY_URL                → gateway root (required on Vercel/prod)
+ *   NEXT_PUBLIC_CAOS_GATEWAY_URL    → accepted fallback if CAOS_GATEWAY_URL unset
+ *   CAOS_PROJECTION_API_URL         → legacy alias (gateway root; /api/v1/public stripped)
+ *   CAOS_PROJECTION_DIR              → EXPLICIT opt-in file transport (never default)
+ *   Local default http://localhost:4000 only when not on Vercel/production.
  *
  * The application NEVER writes to either transport and never imports
  * operating-system code.
@@ -80,9 +79,11 @@ class FileProjectionSource implements ProjectionSource {
  */
 class SdkProjectionSource implements ProjectionSource {
   private readonly client: CaosClient;
+  private readonly gatewayUrl: string;
 
   constructor(gatewayUrl: string) {
-    this.client = new CaosClient(gatewayUrl.replace(/\/$/, ""));
+    this.gatewayUrl = gatewayUrl.replace(/\/$/, "");
+    this.client = new CaosClient(this.gatewayUrl);
   }
 
   async getRecord(recordType: string, slug: string): Promise<PublicRecord | null> {
@@ -91,8 +92,13 @@ class SdkProjectionSource implements ProjectionSource {
     try {
       const raw = await this.client.getPublicRecord(slug);
       const parsed = PublicRecordSchema.safeParse(raw);
-      return parsed.success ? parsed.data : null;
-    } catch {
+      if (!parsed.success) {
+        console.error("[citizen] PublicRecord schema rejected", slug, parsed.error.issues[0]);
+        return null;
+      }
+      return parsed.data;
+    } catch (err) {
+      console.error("[citizen] getRecord failed", slug, err instanceof Error ? err.message : err);
       return null;
     }
   }
@@ -102,8 +108,20 @@ class SdkProjectionSource implements ProjectionSource {
     try {
       const raw = await this.client.getPublicNavigation();
       const parsed = NavigationIndexSchema.safeParse(raw);
-      return parsed.success ? parsed.data : null;
-    } catch {
+      if (!parsed.success) {
+        console.error("[citizen] NavigationIndex schema rejected", parsed.error.issues[0]);
+        return null;
+      }
+      return parsed.data;
+    } catch (err) {
+      const anyErr = err as { message?: string; status?: number; data?: unknown; code?: string };
+      console.error("[citizen] getNavigation failed", {
+        message: anyErr.message ?? String(err),
+        status: anyErr.status,
+        code: anyErr.code,
+        data: anyErr.data,
+        gateway: this.gatewayUrl,
+      });
       return null;
     }
   }
@@ -112,14 +130,45 @@ class SdkProjectionSource implements ProjectionSource {
     try {
       const raw = await this.client.searchPublicRecords(query, { limit: options?.limit });
       const parsed = SearchResponseSchema.safeParse(raw);
-      return parsed.success ? parsed.data : null;
-    } catch {
+      if (!parsed.success) {
+        console.error("[citizen] SearchResponse schema rejected", parsed.error.issues[0]);
+        return null;
+      }
+      return parsed.data;
+    } catch (err) {
+      console.error("[citizen] search failed", err instanceof Error ? err.message : err);
       return null;
     }
   }
 }
 
 let cached: ProjectionSource | null = null;
+
+/**
+ * Resolve the Engine 12 gateway root.
+ * Server-side only. Prefer CAOS_GATEWAY_URL (server secret/config).
+ * NEXT_PUBLIC_CAOS_GATEWAY_URL is accepted for misconfigured Vercel projects
+ * that only set the public-prefixed name — it is not required by design.
+ */
+export function resolveGatewayUrl(env: NodeJS.ProcessEnv = process.env): string {
+  const legacy = env.CAOS_PROJECTION_API_URL?.replace(/\/api\/v1\/public\/?$/, "");
+  const raw =
+    env.CAOS_GATEWAY_URL?.trim() ||
+    env.NEXT_PUBLIC_CAOS_GATEWAY_URL?.trim() ||
+    legacy?.trim() ||
+    "";
+  if (raw) return raw.replace(/\/$/, "");
+
+  // Local default only. Never silently use localhost on Vercel/production hosts.
+  if (env.VERCEL || env.NODE_ENV === "production") {
+    throw new Error(
+      "CAOS_GATEWAY_URL is not set. Set it to the Engine 12 origin " +
+        "(e.g. https://api.officeofthecitizen.org). " +
+        "NEXT_PUBLIC_CAOS_GATEWAY_URL alone is not the preferred name.",
+    );
+  }
+  return "http://localhost:4000";
+}
 
 export function projectionSource(): ProjectionSource {
   if (cached) return cached;
@@ -128,11 +177,7 @@ export function projectionSource(): ProjectionSource {
     cached = new FileProjectionSource(dir);
     return cached;
   }
-  // Legacy CAOS_PROJECTION_API_URL pointed at the /api/v1/public prefix;
-  // CaosClient expects the gateway root, so strip the prefix if present.
-  const legacy = process.env.CAOS_PROJECTION_API_URL?.replace(/\/api\/v1\/public\/?$/, "");
-  const gatewayUrl =
-    process.env.CAOS_GATEWAY_URL ?? legacy ?? "http://localhost:4000";
+  const gatewayUrl = resolveGatewayUrl();
   cached = new SdkProjectionSource(gatewayUrl);
   return cached;
 }

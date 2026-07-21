@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BottomNav } from "@/components/shell/BottomNav";
 import { MotionProvider } from "@/components/shell/MotionProvider";
+import CaosFooter from "@/components/shell/CaosFooter";
 
 /**
  * Citizen shell. CAOS remains invisible: the product is the citizen's
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MotionProvider>
           {children}
           <BottomNav />
+          <CaosFooter />
         </MotionProvider>
       </body>
     </html>
