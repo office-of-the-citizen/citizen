@@ -2,23 +2,25 @@ name: Update caos-sdk package
 
 # Bumps @office-of-the-citizen/caos-sdk whenever the SDK publishes a new version
 # (repository_dispatch from caos-sdk) or on manual / scheduled check.
+#
+# Installs from the git tag (vX.Y.Z) so consumer repos do not need GitHub
+# Packages read access. SDK is still published to npm.pkg.github.com for
+# external consumers.
 on:
   repository_dispatch:
     types: [sdk-released]
   schedule:
-    # Backup: pick up missed publishes daily
     - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       version:
-        description: "SDK version to install (empty = latest)"
+        description: "SDK version to install (empty = latest git tag)"
         required: false
         default: ""
 
 permissions:
   contents: write
   pull-requests: write
-  packages: read
 
 concurrency:
   group: update-caos-sdk
@@ -28,20 +30,16 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@office-of-the-citizen"
 
       - name: Resolve target version
         id: ver
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PKG="@office-of-the-citizen/caos-sdk"
           if [ -n "${{ github.event.client_payload.version }}" ]; then
@@ -49,35 +47,61 @@ jobs:
           elif [ -n "${{ github.event.inputs.version }}" ]; then
             TARGET="${{ github.event.inputs.version }}"
           else
-            TARGET=$(npm view "$PKG" version --registry=https://npm.pkg.github.com)
+            TARGET=$(gh api repos/office-of-the-citizen/caos-sdk/releases/latest --jq .tag_name | sed 's/^v//')
           fi
+          TARGET="${TARGET#v}"
+          SPEC="github:office-of-the-citizen/caos-sdk#v${TARGET}"
           RAW=$(node -p "require('./package.json').dependencies['$PKG']")
-          # file: / link: / tarball always treated as needing a registry pin
-          if echo "$RAW" | grep -Eq '^(file:|link:|http)'; then
-            CURRENT="(local)"
-            CHANGED=true
+          if [ "$RAW" = "$SPEC" ] || [ "$RAW" = "$TARGET" ] || [ "$RAW" = "v$TARGET" ]; then
+            CHANGED=false
           else
-            CURRENT=$(echo "$RAW" | sed 's/^[\^~]//')
-            if [ "$CURRENT" = "$TARGET" ]; then CHANGED=false; else CHANGED=true; fi
+            CHANGED=true
           fi
           echo "target=$TARGET" >> "$GITHUB_OUTPUT"
-          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "spec=$SPEC" >> "$GITHUB_OUTPUT"
+          echo "current=$RAW" >> "$GITHUB_OUTPUT"
           echo "package=$PKG" >> "$GITHUB_OUTPUT"
           echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
-          echo "Current=$CURRENT Target=$TARGET changed=$CHANGED"
+          echo "Current=$RAW Target=$SPEC changed=$CHANGED"
 
       - name: Skip if already on target
         if: steps.ver.outputs.changed != 'true'
-        run: echo "Already on ${{ steps.ver.outputs.target }} — nothing to do"
+        run: echo "Already on ${{ steps.ver.outputs.spec }} — nothing to do"
 
-      - name: Bump dependency and install
+      - name: Bump dependency and verify
         if: steps.ver.outputs.changed == 'true'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PKG="${{ steps.ver.outputs.package }}"
-          TARGET="${{ steps.ver.outputs.target }}"
-          npm install "${PKG}@${TARGET}" --save-exact
+          SPEC="${{ steps.ver.outputs.spec }}"
+          npm install "${SPEC}" --save-exact
+          # Ensure the dependency key stays the scoped package name
+          node <<'NODE'
+          const fs = require("fs");
+          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+          const name = process.env.PKG;
+          const spec = process.env.SPEC;
+          // npm may key by folder name; normalize
+          for (const [k, v] of Object.entries(pkg.dependencies || {})) {
+            if (v === spec || k.includes("caos-sdk")) {
+              delete pkg.dependencies[k];
+            }
+          }
+          pkg.dependencies = pkg.dependencies || {};
+          pkg.dependencies[name] = spec;
+          // stable key order not required
+          fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+          NODE
+          PKG="$PKG" SPEC="$SPEC" node -e '
+            const fs=require("fs");
+            const pkg=JSON.parse(fs.readFileSync("package.json","utf8"));
+            const name=process.env.PKG, spec=process.env.SPEC;
+            for (const [k,v] of Object.entries(pkg.dependencies||{})) {
+              if (String(v)===spec || k.includes("caos-sdk")) delete pkg.dependencies[k];
+            }
+            pkg.dependencies[name]=spec;
+            fs.writeFileSync("package.json", JSON.stringify(pkg,null,2)+"\n");
+          '
+          npm install
           npm run typecheck
           npm test
 
@@ -92,8 +116,8 @@ jobs:
             Automated package update.
 
             - Package: `@office-of-the-citizen/caos-sdk`
-            - From: `${{ steps.ver.outputs.current }}`
-            - To: `${{ steps.ver.outputs.target }}`
+            - Spec: `${{ steps.ver.outputs.spec }}`
+            - Previous: `${{ steps.ver.outputs.current }}`
 
             Triggered by SDK publish / scheduled check.
           branch: deps/caos-sdk-${{ steps.ver.outputs.target }}
