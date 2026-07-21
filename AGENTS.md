@@ -26,11 +26,10 @@ It is not part of the operating system.
 This repository may contain:
 
 - Public interfaces
-- Presentation
-- Navigation
-- Discovery
+- Presentation (labels, icons, colours, typography)
+- Navigation / discovery UX
 - Maps
-- User experience
+- Application view-model composition (permanent snapshot + live truth)
 
 This repository MUST NOT contain:
 
@@ -41,8 +40,27 @@ This repository MUST NOT contain:
 - Truth compilation
 - Verification
 - Database access
+- A second spatial object registry
 
 Those belong in **caos**.
+
+---
+
+## Data sources (Founder Amendment 2026-07-21)
+
+```
+Permanent geography:  SDK distributes Engine 10 permanent snapshot (CAOS-owned)
+Live truth:           CAOS via SDK HTTP client (Engine 12 → Engine 10 truth projections)
+Composition:          Citizen only (no SDK compose helpers)
+```
+
+- Load permanent snapshot first; overlay truth when available.
+- Continue rendering when truth is unavailable.
+- Population comes from truth only — never from the permanent snapshot.
+- Area, ward_count, polling_unit_count come from the permanent snapshot.
+
+The SDK does **not** own permanent objects; it distributes a published snapshot.
+CAOS remains the sole constitutional owner.
 
 ---
 
@@ -63,6 +81,6 @@ If functionality is unavailable through the SDK or public API, stop and recommen
 
 ## Final Rule
 
-Citizen renders constitutional truth.
+Citizen renders constitutional truth and permanent geography.
 
-It does not create it.
+It does not create either.

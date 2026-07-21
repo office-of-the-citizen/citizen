@@ -1,11 +1,11 @@
-import { projectionSource } from "@/sdk/source";
 import { HomeGate } from "@/components/shell/HomeGate";
-import { ProjectionUnavailable } from "@/components/shared/ProjectionUnavailable";
+import { navigationFromPermanentSnapshot } from "@/lib/permanent-navigation";
 
-export const dynamic = "force-dynamic";
-
+/**
+ * Entry uses the permanent snapshot for discovery navigation — no gateway
+ * required to explore Nigeria → State → LGA.
+ */
 export default async function EntryPage() {
-  const navigation = await projectionSource().getNavigation("lga");
-  if (!navigation) return <ProjectionUnavailable />;
+  const navigation = navigationFromPermanentSnapshot();
   return <HomeGate navigation={navigation} />;
 }

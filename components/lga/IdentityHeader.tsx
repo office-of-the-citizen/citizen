@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import type { PermanentSpatialObject } from "@office-of-the-citizen/caos-sdk";
 import type { PublicRecord } from "@/sdk/contracts";
 import { AvatarArt, HeaderArt, SealArt } from "@/presentation/placeholders/art";
 import { Icon } from "@/presentation/icons/Icon";
@@ -11,23 +12,41 @@ import { HomeAction } from "./HomeAction";
 
 /**
  * Identity layer — hero imagery, location chip, seal and place name.
- * Media resolves: projected identity media → placeholder artwork (Founder
- * media doctrine). The place, not the office holder, is the dominant
- * identity. The location line derives from the projected breadcrumb chain;
- * the application names no jurisdiction itself.
+ *
+ * Name and lineage prefer the permanent snapshot (always available). Media
+ * and projected display fields overlay from truth when present.
  */
-export function IdentityHeader({ record }: { record: PublicRecord }) {
-  const name = record.display.subject_name;
-  const owner = record.display.owner?.name ?? null;
-  const headerUrl = record.identity?.header?.locator ?? null;
-  const logoUrl = record.identity?.logo?.locator ?? null;
+export function IdentityHeader({
+  permanent,
+  breadcrumb,
+  truth,
+}: {
+  permanent: PermanentSpatialObject;
+  breadcrumb: PermanentSpatialObject[];
+  truth: PublicRecord | null;
+}) {
+  const name = truth?.display.subject_name ?? permanent.primary_name;
+  const owner =
+    truth?.display.owner?.name ??
+    breadcrumb
+      .slice(0, -1)
+      .reverse()
+      .find((b) => b.classification === "STATE")?.primary_name ??
+    null;
+  const headerUrl = truth?.identity?.header?.locator ?? null;
+  const logoUrl = truth?.identity?.logo?.locator ?? null;
   const seed = name.length + (owner?.length ?? 0);
-  // Breadcrumb is root-first: [Nigeria, Owner State, Subject]. The location
-  // line under the title reads the chain above the subject, nearest first.
-  const lineage = record.display.breadcrumb
-    .slice(0, -1)
-    .map((b) => b.name)
-    .reverse();
+  // Nearest-first lineage above the subject (permanent breadcrumb is root-first).
+  const lineage =
+    truth?.display.breadcrumb && truth.display.breadcrumb.length > 1
+      ? truth.display.breadcrumb
+          .slice(0, -1)
+          .map((b) => b.name)
+          .reverse()
+      : breadcrumb
+          .slice(0, -1)
+          .map((b) => b.primary_name)
+          .reverse();
 
   return (
     <motion.header
@@ -44,7 +63,6 @@ export function IdentityHeader({ record }: { record: PublicRecord }) {
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/45" />
 
-      {/* Top chrome: location chip · search · profile */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 px-4 pt-safe-t">
         <div className="mt-3 flex w-full items-center justify-between gap-3">
           <Link
@@ -78,12 +96,10 @@ export function IdentityHeader({ record }: { record: PublicRecord }) {
         </div>
       </div>
 
-      {/* Set as Home — floats over the hero, above the sheet edge */}
       <div className="absolute bottom-[9.5rem] right-4 z-10">
-        <HomeAction slug={record.slug} name={name} onDark />
+        <HomeAction slug={permanent.slug} name={name} onDark />
       </div>
 
-      {/* Identity block: seal + name + state */}
       <div className="absolute inset-x-0 bottom-12 flex items-center gap-4 px-5 py-1">
         <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full shadow-lg">
           {logoUrl ? (

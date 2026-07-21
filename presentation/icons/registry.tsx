@@ -28,7 +28,12 @@ export type IconAlias =
   | "pin"
   | "map"
   | "close"
-  | "info";
+  | "info"
+  /** Stats bar — match ratified LGA profile reference. */
+  | "stat-population"
+  | "stat-area"
+  | "stat-wards"
+  | "stat-polling-units";
 
 const strokeProps = {
   fill: "none",
@@ -162,6 +167,43 @@ const GLYPHS: Record<IconAlias, ReactNode> = {
     <g {...strokeProps}>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5M12 7.5v.5" />
+    </g>
+  ),
+  // Two-person outline (reference: population)
+  "stat-population": (
+    <g {...strokeProps} strokeWidth={1.75}>
+      <circle cx="9" cy="7.5" r="3.25" />
+      <path d="M3.25 19.5c0-3.2 2.6-5.25 5.75-5.25s5.75 2.05 5.75 5.25" />
+      <circle cx="16.25" cy="8.25" r="2.6" />
+      <path d="M14.5 14.35c1.55-.55 3.35-.35 4.75.7.95.7 1.5 1.7 1.5 2.85" />
+    </g>
+  ),
+  // Stacked layers (reference: area)
+  "stat-area": (
+    <g {...strokeProps} strokeWidth={1.75}>
+      <path d="M12 3.5 20 7.25 12 11 4 7.25z" />
+      <path d="m4 12 8 3.75L20 12" />
+      <path d="m4 16.5 8 3.75 8-3.75" />
+    </g>
+  ),
+  // Classical building (reference: wards)
+  "stat-wards": (
+    <g {...strokeProps} strokeWidth={1.75}>
+      <path d="M4 20.5h16" />
+      <path d="M6 20.5V10.5h12v10" />
+      <path d="m4.5 10.5 7.5-6 7.5 6" />
+      <path d="M9 20.5v-5.5h6v5.5" />
+      <path d="M9.5 13h.01M14.5 13h.01" />
+    </g>
+  ),
+  // Ballot box (reference: polling units)
+  "stat-polling-units": (
+    <g {...strokeProps} strokeWidth={1.75}>
+      <path d="M5 10.5h14v10H5z" />
+      <path d="M5 14.5h14" />
+      <path d="M9.5 6.5 12 4l2.5 2.5" />
+      <path d="M12 4v8" />
+      <path d="M8.5 17.5h7" />
     </g>
   ),
 };

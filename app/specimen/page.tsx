@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
+import { breadcrumb, getBySlug } from "@office-of-the-citizen/caos-sdk";
 
 import { SPECIMEN_RECORD } from "@/sdk/fixtures/specimen";
 import { LgaProfileTemplate } from "@/components/lga/LgaProfileTemplate";
 
 /**
- * Template verification surface. Renders the stable LGA template with a
- * fully-populated SAMPLE projection so designers can compare against the
- * ratified visual specification. Clearly bannered; never linked from
- * navigation; excluded from indexing.
+ * Template verification surface. Permanent shell from snapshot + sample truth.
  */
 export const metadata: Metadata = {
   title: "Design specimen",
@@ -15,6 +13,19 @@ export const metadata: Metadata = {
 };
 
 export default function SpecimenPage() {
+  const permanent =
+    getBySlug(SPECIMEN_RECORD.slug) ??
+    getBySlug("lg-oy-ibadan-north") ??
+    null;
+  if (!permanent) {
+    return (
+      <p className="p-8 text-center text-sm text-ink-soft">
+        Specimen permanent object unavailable in snapshot.
+      </p>
+    );
+  }
+  const chain = breadcrumb(permanent.canonical_id);
+
   return (
     <div className="relative">
       <div className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto w-full max-w-md">
@@ -22,7 +33,7 @@ export default function SpecimenPage() {
           Design specimen — sample data, not a public record
         </p>
       </div>
-      <LgaProfileTemplate record={SPECIMEN_RECORD} />
+      <LgaProfileTemplate permanent={permanent} breadcrumb={chain} truth={SPECIMEN_RECORD} />
     </div>
   );
 }

@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { breadcrumb, getBySlug } from "@office-of-the-citizen/caos-sdk";
 
 import { projectionSource } from "@/sdk/source";
 import { LgaProfileTemplate } from "@/components/lga/LgaProfileTemplate";
 
+/**
+ * Permanent-first LGA page.
+ * 1. Resolve place from SDK permanent snapshot (sync, no network).
+ * 2. Overlay CAOS truth when available (network; may fail).
+ * Missing truth does not 404 — only missing permanent identity does.
+ */
 export const dynamic = "force-dynamic";
 
 interface Params {
@@ -11,17 +18,29 @@ interface Params {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const record = await projectionSource().getRecord("lga", params.slug);
-  if (!record) return { title: "Not found" };
-  const owner = record.display.owner?.name;
+  const permanent = getBySlug(params.slug);
+  if (!permanent) return { title: "Not found" };
+  const chain = breadcrumb(permanent.canonical_id);
+  const owner = chain.find((b) => b.classification === "STATE")?.primary_name;
   return {
-    title: `${record.display.subject_name}${owner ? `, ${owner}` : ""}`,
-    description: `The constitutional profile of ${record.display.subject_name}.`,
+    title: `${permanent.primary_name}${owner ? `, ${owner}` : ""}`,
+    description: `The constitutional profile of ${permanent.primary_name}.`,
   };
 }
 
 export default async function LgaProfilePage({ params }: Params) {
-  const record = await projectionSource().getRecord("lga", params.slug);
-  if (!record) notFound();
-  return <LgaProfileTemplate record={record} />;
+  const permanent = getBySlug(params.slug);
+  if (!permanent) notFound();
+
+  const chain = breadcrumb(permanent.canonical_id);
+  let truth = null;
+  try {
+    truth = await projectionSource().getRecord("lga", params.slug);
+  } catch {
+    truth = null;
+  }
+
+  return (
+    <LgaProfileTemplate permanent={permanent} breadcrumb={chain} truth={truth} />
+  );
 }
