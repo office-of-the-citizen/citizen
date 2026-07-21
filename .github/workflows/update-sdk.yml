@@ -79,7 +79,9 @@ jobs:
           '
           npm install
           npm run typecheck
-          npm test
+          # permanent-snapshot tests are self-contained; projection-contract
+          # tests require a sibling CAOS checkout and are monorepo-only.
+          node --experimental-strip-types --no-warnings --test tests/permanent-snapshot.test.mjs
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
