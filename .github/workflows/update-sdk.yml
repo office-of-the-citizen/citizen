@@ -74,23 +74,6 @@ jobs:
           PKG="${{ steps.ver.outputs.package }}"
           SPEC="${{ steps.ver.outputs.spec }}"
           npm install "${SPEC}" --save-exact
-          # Ensure the dependency key stays the scoped package name
-          node <<'NODE'
-          const fs = require("fs");
-          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
-          const name = process.env.PKG;
-          const spec = process.env.SPEC;
-          // npm may key by folder name; normalize
-          for (const [k, v] of Object.entries(pkg.dependencies || {})) {
-            if (v === spec || k.includes("caos-sdk")) {
-              delete pkg.dependencies[k];
-            }
-          }
-          pkg.dependencies = pkg.dependencies || {};
-          pkg.dependencies[name] = spec;
-          // stable key order not required
-          fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
-          NODE
           PKG="$PKG" SPEC="$SPEC" node -e '
             const fs=require("fs");
             const pkg=JSON.parse(fs.readFileSync("package.json","utf8"));
