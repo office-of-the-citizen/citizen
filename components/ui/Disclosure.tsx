@@ -14,10 +14,13 @@ export function Disclosure({
   open,
   children,
   className,
+  onOpenComplete,
 }: {
   open: boolean;
   children: React.ReactNode;
   className?: string;
+  /** Fires once the drawer's height spring settles open — not on close. */
+  onOpenComplete?: () => void;
 }) {
   return (
     <AnimatePresence initial={false}>
@@ -28,6 +31,9 @@ export function Disclosure({
           animate="visible"
           exit="exit"
           className="overflow-hidden"
+          onAnimationComplete={(definition) => {
+            if (definition === "visible") onOpenComplete?.();
+          }}
         >
           <div className={className}>{children}</div>
         </motion.div>

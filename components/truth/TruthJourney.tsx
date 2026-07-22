@@ -3,15 +3,14 @@
 /**
  * TruthJourney — the expandable constitutional journey behind an answer.
  *
- * Replaces the flat “Where this answer comes from” panel with drawers that
- * unfold one at a time:
+ * A continuous constitutional document, not a sequence of pages: three
+ * drawers that unfold one at a time —
  *
- *   Why we know this → How it was verified → Evidence used →
- *   The authority it rests on → What you can rely on →
- *   Verification record → [seal] the full record
+ *   How this was established → Evidence used → Constitutional Authority →
+ *   [seal] the full record
  *
- * Projected truth (labels, excerpts, claim ids, hashes) renders verbatim
- * from the projection. The connective civic education comes from the status
+ * Projected truth (labels, excerpts, claim ids) renders verbatim from the
+ * projection. The connective civic education comes from the status
  * registry and explains the SYSTEM, never a specific fact. Where the record
  * is silent, the journey says so with governed absence copy.
  */
@@ -20,8 +19,6 @@ import { useRouter } from "next/navigation";
 import type { PublicRecord, RecordSection } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
 import { statusEducation } from "@/presentation/status/registry";
-import { formatDateLong } from "@/lib/format";
-import { FactRow } from "@/components/ui/FactRow";
 import { LayeredReveal, type RevealLayer } from "@/components/ui/LayeredReveal";
 import { SealHold } from "./SealHold";
 
@@ -57,6 +54,37 @@ function authorityGroups(entries: EvidenceEntry[]): AuthorityGroup[] {
   }));
 }
 
+/**
+ * Nearest-governing-authority ranking — TRANSITIONAL.
+ *
+ * The projection does not yet carry a governed "primary authority" field
+ * (checked: absent from both the SDK contract and Engine 10's presentation
+ * registry). Until CAOS projects that judgment directly, this client-side
+ * hierarchy picks the single nearest-governing authority class from what
+ * the projection already supplies, so the Constitutional Authority layer
+ * has one answer instead of a list. Ties, and anything unrecognised, keep
+ * first-encountered order. Replace this with a projected field, not a
+ * richer heuristic, when Engine 10 is ready to own the judgment.
+ */
+const AUTHORITY_RANK: RegExp[] = [
+  /constitution/i,
+  /supreme court|judg[e]?ment/i,
+  /\bact\b/i,
+  /\blaw\b/i,
+  /gazette/i,
+];
+
+function rankAuthorityClass(className: string): number {
+  const rank = AUTHORITY_RANK.findIndex((pattern) => pattern.test(className));
+  return rank === -1 ? AUTHORITY_RANK.length : rank;
+}
+
+/** The single nearest-governing authority among the groups on record. */
+function nearestAuthority(groups: AuthorityGroup[]): AuthorityGroup | undefined {
+  if (!groups.length) return undefined;
+  return [...groups].sort((a, b) => rankAuthorityClass(a.className) - rankAuthorityClass(b.className))[0];
+}
+
 function Body({ children }: { children: React.ReactNode }) {
   return <div className="text-[13px] leading-relaxed text-ink-soft">{children}</div>;
 }
@@ -76,27 +104,19 @@ export function TruthJourney({
   const education = statusEducation(code);
   const entries = evidenceEntries(section);
   const authorities = authorityGroups(entries);
+  const primaryAuthority = nearestAuthority(authorities);
   const label = section.badge?.label ?? "on record";
 
   const layers: RevealLayer[] = [
     {
-      key: "meaning",
-      title: "Why we know this",
+      key: "established",
+      title: "How this was established",
       body: (
         <Body>
           <p>
             This answer is published as{" "}
-            <span className="font-bold text-ink">“{label}”</span>. {education.meaning}
+            <span className="font-bold text-ink">“{label}”</span>. {education.established}
           </p>
-        </Body>
-      ),
-    },
-    {
-      key: "mechanics",
-      title: `How “${label}” is decided`,
-      body: (
-        <Body>
-          <p>{education.mechanics}</p>
           {section.claim_ref ? (
             <p className="mt-2 text-[12px] text-ink-faint">
               Claim on record:{" "}
@@ -109,6 +129,7 @@ export function TruthJourney({
     {
       key: "evidence",
       title: "Evidence used",
+      centerOnOpen: true,
       body: (
         <Body>
           {entries.length ? (
@@ -140,65 +161,36 @@ export function TruthJourney({
       ),
     },
     {
-      key: "authority",
-      title: "The authority it rests on",
+      key: "constitutional-authority",
+      title: "Constitutional Authority",
       body: (
         <Body>
-          {authorities.length ? (
-            <ul className="space-y-2">
-              {authorities.map((a) => (
-                <li key={a.className} className="flex items-start gap-2.5">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-status-reference-soft text-status-reference">
-                    <Icon name="landmark" size={13} strokeWidth={2.4} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-[12px] font-bold uppercase tracking-label text-ink">
-                      {a.className}
+          {primaryAuthority ? (
+            <>
+              <p>
+                This answer ultimately rests on{" "}
+                <span className="font-bold text-ink">{primaryAuthority.className}</span>.
+              </p>
+              <div className="mt-2.5 flex items-start gap-2.5">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-status-reference-soft text-status-reference">
+                  <Icon name="landmark" size={13} strokeWidth={2.4} />
+                </span>
+                <span className="min-w-0">
+                  {primaryAuthority.references.map((ref) => (
+                    <span key={ref} className="block break-all text-[12px] text-ink-soft">
+                      {ref}
                     </span>
-                    {a.references.map((ref) => (
-                      <span key={ref} className="block break-all text-[12px] text-ink-soft">
-                        {ref}
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                  ))}
+                </span>
+              </div>
+            </>
           ) : (
             <p>
               The record names no legal authority for this answer yet — when
-              authority is admitted as evidence, it appears here with its class
-              and source.
+              authority is admitted as evidence, the nearest governing source
+              appears here.
             </p>
           )}
-        </Body>
-      ),
-    },
-    {
-      key: "reliance",
-      title: "What you can rely on",
-      body: (
-        <Body>
-          <p>{education.implication}</p>
-        </Body>
-      ),
-    },
-    {
-      key: "history",
-      title: "Verification record",
-      body: (
-        <Body>
-          <dl className="space-y-1.5">
-            {section.valid_from ? (
-              <FactRow label="Valid from" value={formatDateLong(section.valid_from)} />
-            ) : null}
-            {section.valid_to ? (
-              <FactRow label="Valid until" value={formatDateLong(section.valid_to)} />
-            ) : null}
-            <FactRow label="Record built" value={formatDateLong(record.provenance.built_at)} />
-            <FactRow label="Built by" value={record.provenance.builder} />
-            <FactRow label="Input hash" mono value={record.provenance.build_input_hash} />
-          </dl>
         </Body>
       ),
     },
@@ -210,8 +202,8 @@ export function TruthJourney({
       terminal={
         recordHref ? (
           <SealHold
-            label="Open the constitutional record"
-            sublabel="Hold the seal to open the full record"
+            label="More"
+            sublabel="Hold to open the full constitutional record"
             onUnseal={() => router.push(recordHref)}
           />
         ) : undefined

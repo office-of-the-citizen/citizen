@@ -9,7 +9,7 @@
  * renders after the last layer — typically the transition to a dedicated
  * constitutional record page.
  */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { Icon } from "@/presentation/icons/Icon";
@@ -20,6 +20,12 @@ export interface RevealLayer {
   key: string;
   title: string;
   body: React.ReactNode;
+  /**
+   * When this layer opens, smoothly scroll it toward the centre of the
+   * viewport once its drawer has started expanding — the record unfolding
+   * toward the citizen, not the citizen hunting for what changed.
+   */
+  centerOnOpen?: boolean;
 }
 
 export function LayeredReveal({
@@ -34,6 +40,7 @@ export function LayeredReveal({
 }) {
   /** How deep the citizen has opened: layers[0..depth-1] are visible. */
   const [depth, setDepth] = useState(0);
+  const layerRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   if (!layers.length) return null;
 
@@ -45,7 +52,12 @@ export function LayeredReveal({
         // A layer's handle exists once every previous layer is open.
         if (i > depth) return null;
         return (
-          <div key={layer.key}>
+          <div
+            key={layer.key}
+            ref={(node) => {
+              layerRefs.current[i] = node;
+            }}
+          >
             <button
               type="button"
               onClick={() => setDepth(opened ? i : i + 1)}
@@ -71,7 +83,15 @@ export function LayeredReveal({
                 <Icon name="chevron-right" size={15} strokeWidth={2.4} />
               </motion.span>
             </button>
-            <Disclosure open={opened} className="pb-3 pl-0.5 pr-1">
+            <Disclosure
+              open={opened}
+              className="pb-3 pl-0.5 pr-1"
+              onOpenComplete={
+                layer.centerOnOpen
+                  ? () => layerRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" })
+                  : undefined
+              }
+            >
               {layer.body}
             </Disclosure>
           </div>
