@@ -7,14 +7,14 @@
  * case, and tracks whether the question is answered. The form teaches the
  * citizen what happens next — no action is opaque.
  */
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { participationSource } from "@/sdk/participation";
 import { Icon } from "@/presentation/icons/Icon";
 import { Card } from "@/components/ui/Card";
 
-export default function QuestionPage() {
+function QuestionContent() {
   const searchParams = useSearchParams();
   const subjectRef = searchParams.get("subject") ?? "";
   const typeParam = searchParams.get("type");
@@ -173,5 +173,13 @@ export default function QuestionPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function QuestionPage() {
+  return (
+    <Suspense>
+      <QuestionContent />
+    </Suspense>
   );
 }

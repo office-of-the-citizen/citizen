@@ -21,7 +21,7 @@
     "tailwind-merge": "^2.3.0",
     "zod": "^3.22.0",
     "zustand": "^4.5.0",
-    "@office-of-the-citizen/caos-sdk": "github:office-of-the-citizen/caos-sdk#v0.4.0"
+    "@office-of-the-citizen/caos-sdk": "github:office-of-the-citizen/caos-sdk#v0.6.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -8,14 +8,14 @@
  * through to response or recorded silence. Teaches the citizen their
  * legal right at the moment they exercise it.
  */
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { participationSource } from "@/sdk/participation";
 import { Icon } from "@/presentation/icons/Icon";
 import { Card } from "@/components/ui/Card";
 
-export default function FOIRequestPage() {
+function FOIRequestContent() {
   const searchParams = useSearchParams();
   const institutionParam = searchParams.get("institution") ?? "";
   const subjectParam = searchParams.get("subject") ?? "";
@@ -204,5 +204,13 @@ export default function FOIRequestPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function FOIRequestPage() {
+  return (
+    <Suspense>
+      <FOIRequestContent />
+    </Suspense>
   );
 }
