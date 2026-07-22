@@ -8,6 +8,7 @@ import { IdentityHeader } from "./IdentityHeader";
 import { ChairmanCard } from "./ChairmanCard";
 import { RelationshipRow } from "./RelationshipRow";
 import { BudgetCard } from "./BudgetCard";
+import { AllocationSplitCard } from "./AllocationSplitCard";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { CivicJourney } from "./CivicJourney";
 import { StatisticsBar, buildStatisticsCells } from "./StatisticsBar";
@@ -68,6 +69,7 @@ export function LgaProfileTemplate({
               <ChairmanCard record={truth} />
               <RelationshipRow record={truth} />
               <BudgetCard record={truth} />
+              <AllocationSplitCard />
               <ActivityTimeline record={truth} />
               <CivicJourney record={truth} />
               <RecordFootnote truth={truth} />
