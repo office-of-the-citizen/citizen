@@ -205,9 +205,9 @@ export function ConstitutionalRecord({
             <FactRow label="Input hash" mono value={record.provenance.build_input_hash} />
           </dl>
           <p className="mt-3 border-t border-line pt-3 text-[12px] leading-relaxed text-ink-faint">
-            This record is a projection: derived, disposable and rebuildable from
-            constitutional truth. Deleting it deletes nothing — it can always be
-            rebuilt, byte for byte, from the record it stands on.
+            This record is derived from admitted constitutional sources. It can
+            always be rebuilt from the evidence it stands on — nothing here is
+            opinion, and nothing is lost when it refreshes.
           </p>
         </Card>
       </div>

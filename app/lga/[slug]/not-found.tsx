@@ -8,9 +8,9 @@ export default function LgaNotFound() {
       <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
         <Icon name="pin" size={26} />
       </span>
-      <h1 className="mt-4 text-lg font-bold text-ink">No public record here</h1>
+      <h1 className="mt-4 text-lg font-bold text-ink">No record at this address</h1>
       <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-        This address doesn’t match any Local Government public record.
+        This address doesn&rsquo;t match any Local Government in the constitutional record.
       </p>
       <Link
         href="/explore"

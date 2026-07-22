@@ -9,6 +9,7 @@ import { ChairmanCard } from "./ChairmanCard";
 import { RelationshipRow } from "./RelationshipRow";
 import { BudgetCard } from "./BudgetCard";
 import { AllocationSplitCard } from "./AllocationSplitCard";
+import { MonthlyAllocationCard } from "./MonthlyAllocationCard";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { CivicJourney } from "./CivicJourney";
 import { StatisticsBar, buildStatisticsCells } from "./StatisticsBar";
@@ -70,6 +71,7 @@ export function LgaProfileTemplate({
               <RelationshipRow record={truth} />
               <BudgetCard record={truth} />
               <AllocationSplitCard />
+              <MonthlyAllocationCard record={truth} />
               <ActivityTimeline record={truth} />
               <CivicJourney record={truth} />
               <RecordFootnote truth={truth} />
@@ -79,8 +81,8 @@ export function LgaProfileTemplate({
               <EmptyState
                 icon="document"
                 tone="unknown"
-                title="Live constitutional truth unavailable"
-                body="Place identity and permanent statistics are shown from the published geography snapshot. Chairman, representatives, and population will appear when the operating system is reachable."
+                title="The record is not yet complete"
+                body="Place identity and permanent statistics are shown. Chairman, representatives, budget and population will appear here as the constitutional record is built."
               />
             </div>
           )}
@@ -102,14 +104,12 @@ function RecordFootnote({ truth }: { truth: PublicRecord }) {
     >
       <Icon name="shield" size={13} className="shrink-0 text-primary/60" />
       <span>
-        Public record built{" "}
+        Constitutional record compiled{" "}
         {new Date(truth.provenance.built_at).toLocaleDateString("en-NG", {
           year: "numeric",
           month: "short",
           day: "numeric",
         })}
-        {" · "}
-        {truth.provenance.build_input_hash.slice(0, 19)}…
       </span>
       <Icon name="chevron-right" size={12} className="shrink-0" />
     </Link>
