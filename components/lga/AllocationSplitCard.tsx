@@ -27,21 +27,24 @@ const TIERS: AllocationTier[] = [
   {
     label: "Federal Government",
     share: 52.68,
-    description: "Retained for national responsibilities — defence, foreign affairs, and federal infrastructure.",
+    description:
+      "Supports nationwide responsibilities — defence, foreign affairs, national infrastructure and federal institutions.",
     colour: "bg-primary",
     dot: "bg-primary",
   },
   {
     label: "State Government",
     share: 26.72,
-    description: "Shared among Nigeria's 36 states, then divided further inside each state for its own priorities.",
+    description:
+      "Distributed among Nigeria's 36 states. Each state applies its share to state-level services and priorities.",
     colour: "bg-accent-blue",
     dot: "bg-accent-blue",
   },
   {
     label: "Local Government",
     share: 20.6,
-    description: "Shared among all 774 local governments — the tier of government closest to daily life, including this one.",
+    description:
+      "Shared among all 774 local governments. Since July 2024, each council receives its portion directly from the Federation Account — the tier closest to daily life, including this one.",
     colour: "bg-accent-amber",
     dot: "bg-accent-amber",
   },
@@ -67,10 +70,12 @@ export function AllocationSplitCard() {
       </div>
 
       <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
-        Every naira the federation collects — oil revenue, company tax, customs duties — is paid
-        into one federation account and divided constitutionally among three tiers of government
-        before any tier spends it. This is that national split. It explains how funding generally
-        flows, not this local government&rsquo;s own budget.
+        Every naira collected across the country — from oil, company tax, customs and other
+        sources — enters one shared account called the Federation Account. Before any government
+        spends, the Constitution requires that this account be divided among three tiers: federal,
+        state, and local government. The percentages below are the standing national formula — they
+        explain how funding is shared across the country, not this local government&rsquo;s own
+        budget.
       </p>
 
       <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-chip bg-surface-sunken">
@@ -94,10 +99,11 @@ export function AllocationSplitCard() {
       </div>
 
       <p className="mt-3.5 text-[11px] leading-relaxed text-ink-faint">
-        This is the general constitutional revenue-sharing formula fixed in 1992 by the Revenue
-        Mobilisation, Allocation and Fiscal Commission, and it is currently under review. It
-        explains the system nationwide — not a figure verified for this local government
-        specifically.
+        This formula was set in 1992 by the Revenue Mobilisation Allocation and Fiscal Commission
+        (RMAFC) and remains the basis for monthly sharing. RMAFC has initiated the first
+        comprehensive review in over thirty years, which may change these percentages. Following
+        the Supreme Court&rsquo;s July 2024 ruling, local governments now receive their share
+        directly from the Federation Account rather than through state joint accounts.
       </p>
     </motion.section>
   );

@@ -3,11 +3,15 @@
 /**
  * TruthJourney — the expandable constitutional journey behind an answer.
  *
- * A continuous constitutional document, not a sequence of pages: three
- * drawers that unfold one at a time —
+ * A continuous constitutional document that unfolds in three layers:
  *
- *   How this was established → Evidence used → Constitutional Authority →
- *   [seal] the full record
+ *   How We Know → Evidence → Constitutional Authority → full record
+ *
+ * The first layer merges "why this status" and "how the answer was decided"
+ * into one flowing institutional narrative — CAOS explaining itself, not
+ * documentation. Evidence expands in place and scrolls to centre. The
+ * authority layer shows the nearest governing constitutional source so the
+ * citizen immediately understands what this answer ultimately rests on.
  *
  * Projected truth (labels, excerpts, claim ids) renders verbatim from the
  * projection. The connective civic education comes from the status
@@ -20,7 +24,7 @@ import type { PublicRecord, RecordSection } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
 import { statusEducation } from "@/presentation/status/registry";
 import { LayeredReveal, type RevealLayer } from "@/components/ui/LayeredReveal";
-import { SealHold } from "./SealHold";
+import { cn } from "@/lib/cn";
 
 interface EvidenceEntry {
   excerpt_text?: string;
@@ -57,14 +61,11 @@ function authorityGroups(entries: EvidenceEntry[]): AuthorityGroup[] {
 /**
  * Nearest-governing-authority ranking — TRANSITIONAL.
  *
- * The projection does not yet carry a governed "primary authority" field
- * (checked: absent from both the SDK contract and Engine 10's presentation
- * registry). Until CAOS projects that judgment directly, this client-side
- * hierarchy picks the single nearest-governing authority class from what
- * the projection already supplies, so the Constitutional Authority layer
- * has one answer instead of a list. Ties, and anything unrecognised, keep
- * first-encountered order. Replace this with a projected field, not a
- * richer heuristic, when Engine 10 is ready to own the judgment.
+ * The projection does not yet carry a governed "primary authority" field.
+ * Until CAOS projects that judgment directly, this client-side hierarchy
+ * picks the single nearest-governing authority class from what the
+ * projection already supplies, so the Constitutional Authority layer has
+ * one answer instead of a list. Replace with a projected field when ready.
  */
 const AUTHORITY_RANK: RegExp[] = [
   /constitution/i,
@@ -83,6 +84,16 @@ function rankAuthorityClass(className: string): number {
 function nearestAuthority(groups: AuthorityGroup[]): AuthorityGroup | undefined {
   if (!groups.length) return undefined;
   return [...groups].sort((a, b) => rankAuthorityClass(a.className) - rankAuthorityClass(b.className))[0];
+}
+
+/** Friendly label for a constitutional authority class. */
+function authorityLabel(className: string): string {
+  if (/constitution/i.test(className)) return "The Constitution";
+  if (/supreme court|judg[e]?ment/i.test(className)) return "Court Judgment";
+  if (/\bact\b/i.test(className)) return "Act of the National Assembly";
+  if (/\blaw\b/i.test(className)) return "State Law";
+  if (/gazette/i.test(className)) return "Official Gazette";
+  return className;
 }
 
 function Body({ children }: { children: React.ReactNode }) {
@@ -109,17 +120,18 @@ export function TruthJourney({
 
   const layers: RevealLayer[] = [
     {
-      key: "established",
-      title: "How this was established",
+      key: "how-we-know",
+      title: "How We Know",
       body: (
         <Body>
           <p>
             This answer is published as{" "}
-            <span className="font-bold text-ink">“{label}”</span>. {education.established}
+            <span className="font-bold text-ink">"{label}"</span>.{" "}
+            {education.narrative}
           </p>
           {section.claim_ref ? (
             <p className="mt-2 text-[12px] text-ink-faint">
-              Claim on record:{" "}
+              Claim reference:{" "}
               <span className="font-mono text-[11px]">{section.claim_ref}</span>
             </p>
           ) : null}
@@ -128,33 +140,43 @@ export function TruthJourney({
     },
     {
       key: "evidence",
-      title: "Evidence used",
+      title: "Evidence",
       centerOnOpen: true,
       body: (
         <Body>
           {entries.length ? (
-            entries.map((entry, i) => (
-              <div key={i} className={i > 0 ? "mt-3" : undefined}>
-                {entry.excerpt_text ? (
-                  <p className="italic">“…{entry.excerpt_text.slice(0, 220)}…”</p>
-                ) : null}
-                {entry.authority_class ? (
-                  <p className="mt-1 text-[11px] font-bold uppercase tracking-label text-ink-faint">
-                    {entry.authority_class}
-                  </p>
-                ) : null}
-                {entry.source_reference ? (
-                  <p className="mt-1 break-all font-medium text-primary">
-                    {entry.source_reference}
-                  </p>
-                ) : null}
-              </div>
-            ))
+            <div className="space-y-3">
+              {entries.map((entry, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "rounded-xl bg-surface px-3.5 py-2.5",
+                    i > 0 && "border-t border-line/50",
+                  )}
+                >
+                  {entry.excerpt_text ? (
+                    <p className="italic text-ink">
+                      "…{entry.excerpt_text.slice(0, 220)}…"
+                    </p>
+                  ) : null}
+                  {entry.authority_class ? (
+                    <p className="mt-1.5 text-[11px] font-bold uppercase tracking-label text-ink-faint">
+                      {entry.authority_class}
+                    </p>
+                  ) : null}
+                  {entry.source_reference ? (
+                    <p className="mt-1 break-all text-[12px] font-medium text-primary">
+                      {entry.source_reference}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
           ) : (
             <p>
               {section.missingness?.explanation ??
                 record.placeholders?.MISSING_FACT?.body ??
-                "The record is honestly silent here."}
+                "The record is honestly silent here — no evidence has been admitted for this answer yet."}
             </p>
           )}
         </Body>
@@ -167,28 +189,39 @@ export function TruthJourney({
         <Body>
           {primaryAuthority ? (
             <>
-              <p>
-                This answer ultimately rests on{" "}
-                <span className="font-bold text-ink">{primaryAuthority.className}</span>.
-              </p>
-              <div className="mt-2.5 flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-status-reference-soft text-status-reference">
-                  <Icon name="landmark" size={13} strokeWidth={2.4} />
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-status-reference-soft text-status-reference">
+                  <Icon name="landmark" size={14} strokeWidth={2.4} />
                 </span>
-                <span className="min-w-0">
-                  {primaryAuthority.references.map((ref) => (
-                    <span key={ref} className="block break-all text-[12px] text-ink-soft">
-                      {ref}
-                    </span>
-                  ))}
+                <span className="text-[13px] font-bold text-ink">
+                  {authorityLabel(primaryAuthority.className)}
                 </span>
               </div>
+              <p className="mt-2">
+                This answer ultimately rests on{" "}
+                <span className="font-semibold text-ink">
+                  {primaryAuthority.className}
+                </span>
+                .
+              </p>
+              {primaryAuthority.references.length > 0 ? (
+                <div className="mt-2 space-y-0.5">
+                  {primaryAuthority.references.map((ref) => (
+                    <p
+                      key={ref}
+                      className="break-all text-[12px] text-ink-faint"
+                    >
+                      {ref}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
             </>
           ) : (
             <p>
-              The record names no legal authority for this answer yet — when
-              authority is admitted as evidence, the nearest governing source
-              appears here.
+              The record does not yet name a governing legal authority for
+              this answer. When authority is admitted as evidence, the
+              nearest constitutional source will appear here.
             </p>
           )}
         </Body>
@@ -201,11 +234,18 @@ export function TruthJourney({
       layers={layers}
       terminal={
         recordHref ? (
-          <SealHold
-            label="More"
-            sublabel="Hold to open the full constitutional record"
-            onUnseal={() => router.push(recordHref)}
-          />
+          <button
+            type="button"
+            onClick={() => router.push(recordHref)}
+            className="pressable-subtle flex min-h-tap w-full items-center justify-between gap-3 py-2.5 text-left"
+          >
+            <span className="text-[13px] font-semibold text-primary">
+              View the full constitutional record
+            </span>
+            <span className="shrink-0 text-primary">
+              <Icon name="arrow-up-right" size={15} strokeWidth={2.4} />
+            </span>
+          </button>
         ) : undefined
       }
     />

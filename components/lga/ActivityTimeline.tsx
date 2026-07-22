@@ -7,26 +7,77 @@ import { osIcon, osRole } from "@/presentation/os-visuals";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeRise } from "@/presentation/animations/motion";
 import { formatDateShort } from "@/lib/format";
+import {
+  constitutionalDevelopments,
+  type ConstitutionalDevelopment,
+} from "@/presentation/updates/constitutional-developments";
 
 /**
  * Latest Updates — the constitutional activity stream.
  *
- * Priority order (governed by the projection, rendered faithfully):
- *   1. Local — news and budget events specific to this local government.
- *      The first slot is always reserved for local information. If nothing
- *      local exists, the slot stays empty — never filled with national stories.
- *   2. National — constitutional developments affecting all 774 local
- *      governments (Supreme Court judgements, electoral reform, budget reform).
+ * Priority order:
+ *   1. LOCAL NEWS — events specific to this local government that are
+ *      not budget-related (projects, judgements, documents, etc.).
+ *      The first slot is always reserved for local information. If
+ *      nothing exists, the slot stays empty — never filled with
+ *      national stories.
+ *   2. BUDGET UPDATES — budget-related events specific to this local
+ *      government (budget approvals, FAAC allocation changes). When
+ *      no general local news exists, budget updates fill the first
+ *      slot. Otherwise they appear in their own section below local
+ *      news.
+ *   3. CONSTITUTIONAL DEVELOPMENTS — nationally relevant developments
+ *      affecting all 774 local governments. These are stable
+ *      educational references (Supreme Court judgements, electoral
+ *      reform, budget reform), always shown below local content.
+ *      Projected NATIONAL-scoped activity entries take precedence and
+ *      appear first within this section.
  *
- * Titles, categories, presentation and empty-state copy all arrive on the
- * projection. The application authors no editorial vocabulary.
+ * Titles, categories, presentation and empty-state copy for projected
+ * entries all arrive on the projection. The application authors no
+ * editorial vocabulary for projected truth.
  */
+
+const BUDGET_CATEGORIES = new Set([
+  "BUDGET",
+  "FAAC",
+  "ALLOCATION",
+  "REVENUE",
+]);
+
+function isBudgetCategory(category: string): boolean {
+  return BUDGET_CATEGORIES.has(category.toUpperCase());
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  GOVERNANCE_REFORM: "Governance Reform",
+  BUDGET_REFORM: "Budget Reform",
+  ELECTORAL_REFORM: "Electoral Reform",
+  JUDICIAL_REFORM: "Judicial Reform",
+};
+
 export function ActivityTimeline({ record }: { record: PublicRecord }) {
   const activity = record.activity ?? [];
   const missing = record.placeholders?.MISSING_TIMELINE;
 
-  const local = activity.filter((a) => a.scope !== "NATIONAL");
-  const national = activity.filter((a) => a.scope === "NATIONAL");
+  /* Tier 1 — local news (non-budget, scope !== NATIONAL) */
+  const localNews = activity.filter(
+    (a) => a.scope !== "NATIONAL" && !isBudgetCategory(a.category),
+  );
+
+  /* Tier 2 — budget updates specific to this LGA (budget-related, scope !== NATIONAL) */
+  const budgetUpdates = activity.filter(
+    (a) => a.scope !== "NATIONAL" && isBudgetCategory(a.category),
+  );
+
+  /* Tier 3a — projected national entries (admitted, sourced by the OS) */
+  const nationalProjected = activity.filter((a) => a.scope === "NATIONAL");
+
+  /* Tier 3b — constitutional developments (static educational floor) */
+  const constitutional = constitutionalDevelopments;
+
+  const hasLocal = localNews.length > 0 || budgetUpdates.length > 0;
+  const showBudgetSection = localNews.length > 0 && budgetUpdates.length > 0;
 
   return (
     <motion.section
@@ -45,13 +96,28 @@ export function ActivityTimeline({ record }: { record: PublicRecord }) {
         ) : null}
       </div>
 
-      {activity.length ? (
+      {/* ── Tier 1 + 2: Local section ─────────────────────────────── */}
+      {hasLocal ? (
         <>
-          {/* Local — always first, never backfilled with national */}
-          {local.length ? (
+          {localNews.length ? (
             <ol className="mt-4">
-              {local.map((item, i) => (
-                <TimelineRow key={`${item.activity_code}-${i}`} item={item} last={i === local.length - 1 && !national.length} />
+              {localNews.map((item, i) => (
+                <TimelineRow
+                  key={`${item.activity_code}-${i}`}
+                  item={item}
+                  last={i === localNews.length - 1 && !showBudgetSection}
+                />
+              ))}
+            </ol>
+          ) : budgetUpdates.length ? (
+            /* Budget updates fill the first slot when no general local news exists */
+            <ol className="mt-4">
+              {budgetUpdates.map((item, i) => (
+                <TimelineRow
+                  key={`${item.activity_code}-${i}`}
+                  item={item}
+                  last={i === budgetUpdates.length - 1}
+                />
               ))}
             </ol>
           ) : (
@@ -60,21 +126,26 @@ export function ActivityTimeline({ record }: { record: PublicRecord }) {
             </p>
           )}
 
-          {/* National — constitutional developments affecting all LGs */}
-          {national.length ? (
+          {/* Budget updates as a distinct section when local news also exists */}
+          {showBudgetSection ? (
             <div className="mt-4 border-t border-line pt-3">
               <p className="text-[11px] font-bold uppercase tracking-label text-ink-faint">
-                Affecting all Local Governments
+                Budget Updates
               </p>
               <ol className="mt-3">
-                {national.map((item, i) => (
-                  <TimelineRow key={`${item.activity_code}-nat-${i}`} item={item} last={i === national.length - 1} />
+                {budgetUpdates.map((item, i) => (
+                  <TimelineRow
+                    key={`${item.activity_code}-bud-${i}`}
+                    item={item}
+                    last={i === budgetUpdates.length - 1}
+                  />
                 ))}
               </ol>
             </div>
           ) : null}
         </>
       ) : (
+        /* Reserved empty slot — never filled with national stories */
         <div className="mt-3 flex items-start gap-3.5">
           <div className="relative flex flex-col items-center">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-sunken text-ink-faint">
@@ -91,6 +162,32 @@ export function ActivityTimeline({ record }: { record: PublicRecord }) {
           </div>
         </div>
       )}
+
+      {/* ── Tier 3: Constitutional developments — always shown ────── */}
+      <div className="mt-4 border-t border-line pt-3">
+        <p className="text-[11px] font-bold uppercase tracking-label text-ink-faint">
+          Affecting all Local Governments
+        </p>
+        <p className="mt-1 text-[12px] leading-relaxed text-ink-faint">
+          National developments that shape how every local government operates.
+        </p>
+        <ol className="mt-3">
+          {nationalProjected.map((item, i) => (
+            <TimelineRow
+              key={`${item.activity_code}-nat-${i}`}
+              item={item}
+              last={i === nationalProjected.length - 1 && constitutional.length === 0}
+            />
+          ))}
+          {constitutional.map((dev, i) => (
+            <ConstitutionalRow
+              key={dev.id}
+              dev={dev}
+              last={i === constitutional.length - 1}
+            />
+          ))}
+        </ol>
+      </div>
     </motion.section>
   );
 }
@@ -128,6 +225,49 @@ function TimelineRow({ item, last }: { item: ActivityEntry; last: boolean }) {
         </div>
         {item.summary ? (
           <p className="mt-0.5 truncate text-[13px] text-ink-soft">{item.summary}</p>
+        ) : null}
+      </div>
+    </li>
+  );
+}
+
+function ConstitutionalRow({
+  dev,
+  last,
+}: {
+  dev: ConstitutionalDevelopment;
+  last: boolean;
+}) {
+  const role = osRole(dev.presentation.colour_role);
+  const glyph = osIcon(dev.presentation.icon);
+  const date = formatDateShort(dev.date);
+  const categoryLabel = CATEGORY_LABELS[dev.category] ?? dev.category;
+
+  return (
+    <li className="flex gap-3.5">
+      <div className="flex flex-col items-center">
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${role.bubble}`}
+        >
+          <Icon name={glyph} size={18} />
+        </div>
+        {!last ? <div className="my-1 w-0.5 flex-1 rounded bg-line" /> : null}
+      </div>
+      <div className="min-w-0 flex-1 pb-5">
+        <p className={`text-[11px] font-bold uppercase tracking-wide ${role.text}`}>
+          {categoryLabel}
+          {date ? <span className="font-medium text-ink-faint">{`  ·  ${date}`}</span> : null}
+        </p>
+        <div className="mt-0.5 flex items-center justify-between gap-2">
+          <p className="text-[15px] font-bold text-ink">{dev.title}</p>
+          <Icon name="chevron-right" size={15} className="text-ink-hint" />
+        </div>
+        {dev.summary ? (
+          <p className="mt-0.5 text-[13px] leading-relaxed text-ink-soft">{dev.summary}</p>
+        ) : null}
+        <p className="mt-1 text-[11px] text-ink-faint">{dev.authority}</p>
+        {dev.impact ? (
+          <p className="mt-0.5 text-[12px] leading-relaxed text-ink-faint">{dev.impact}</p>
         ) : null}
       </div>
     </li>
