@@ -38,7 +38,12 @@ export type IconAlias =
   | "stat-population"
   | "stat-area"
   | "stat-wards"
-  | "stat-polling-units";
+  | "stat-polling-units"
+  | "question"
+  | "hand-raise"
+  | "flag"
+  | "eye"
+  | "send";
 
 const strokeProps = {
   fill: "none",
@@ -238,6 +243,39 @@ const GLYPHS: Record<IconAlias, ReactNode> = {
       <path d="M9.5 6.5 12 4l2.5 2.5" />
       <path d="M12 4v8" />
       <path d="M8.5 17.5h7" />
+    </g>
+  ),
+  question: (
+    <g {...strokeProps}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5" />
+      <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
+    </g>
+  ),
+  "hand-raise": (
+    <g {...strokeProps}>
+      <path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M10 11V4.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M13 11V5.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M16 11V7.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7v-1" />
+    </g>
+  ),
+  flag: (
+    <g {...strokeProps}>
+      <path d="M4 21V4" />
+      <path d="M4 4h13l-2 4 2 4H4" />
+    </g>
+  ),
+  eye: (
+    <g {...strokeProps}>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </g>
+  ),
+  send: (
+    <g {...strokeProps}>
+      <path d="m3 11 18-8-8 18-2-8z" />
+      <path d="M11 19 3 11" />
     </g>
   ),
 };

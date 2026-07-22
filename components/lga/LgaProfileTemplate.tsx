@@ -14,6 +14,7 @@ import { ActivityTimeline } from "./ActivityTimeline";
 import { CivicJourney } from "./CivicJourney";
 import { StatisticsBar, buildStatisticsCells } from "./StatisticsBar";
 import { populationFromTruth } from "@/lib/truth-facts";
+import { ParticipateCard } from "./ParticipateCard";
 
 /**
  * THE stable Local Government template.
@@ -86,6 +87,9 @@ export function LgaProfileTemplate({
               />
             </div>
           )}
+
+          {/* Participation doorway — always visible */}
+          <ParticipateCard slug={truth?.slug ?? permanent.canonical_id} />
         </div>
       </div>
     </div>

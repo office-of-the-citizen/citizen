@@ -20,6 +20,7 @@ import { StatusChip } from "@/components/ui/StatusChip";
 import { statusEducation } from "@/presentation/status/registry";
 import { cardIn, fadeIn } from "@/presentation/animations/motion";
 import { formatDateLong } from "@/lib/format";
+import { ParticipationPrompt } from "@/components/participation";
 
 interface EvidenceEntry {
   excerpt_text?: string;
@@ -164,6 +165,12 @@ export function ConstitutionalRecord({
                     {section.missingness?.explanation ?? education.meaning}
                   </p>
                 )}
+                {section.missingness ? (
+                  <ParticipationPrompt
+                    missingnessState={section.missingness.missingness_state}
+                    subjectRef={permanent.canonical_id}
+                  />
+                ) : null}
               </Card>
             </motion.div>
           );
