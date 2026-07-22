@@ -47,10 +47,10 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
               exit={{ opacity: 0, y: -10 }}
               className="pt-10"
             >
-              <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+              <p className="text-sm font-semibold uppercase tracking-label text-primary">
                 Discover Nigeria
               </p>
-              <h1 className="mt-3 text-[1.7rem] font-extrabold leading-snug text-ink">
+              <h1 className="mt-3 text-[1.7rem] font-extrabold leading-snug tracking-display text-ink">
                 You know your President.
                 <br />
                 You know your Governor.
@@ -75,7 +75,7 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
               <button
                 type="button"
                 onClick={clearState}
-                className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
+                className="pressable flex min-h-tap items-center gap-1.5 text-sm font-semibold text-ink-soft transition-colors duration-quick ease-out hover:text-ink"
               >
                 <Icon name="chevron-left" size={16} />
                 All of Nigeria
@@ -181,7 +181,7 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
                     initial="hidden"
                     animate="visible"
                     onClick={() => goToLga(r.slug, "MAP_TAP")}
-                    className="truncate rounded-2xl bg-surface px-3.5 py-3 text-left text-[13px] font-semibold text-ink shadow-card transition-colors active:bg-primary-soft"
+                    className="pressable min-h-tap truncate rounded-2xl bg-surface px-3.5 py-3 text-left text-[13px] font-semibold text-ink shadow-card transition-colors duration-quick ease-out active:bg-primary-soft"
                   >
                     {r.name}
                   </motion.button>
@@ -236,7 +236,7 @@ function StateCarousel({ navigation }: { navigation: NavigationIndex }) {
             data-state-id={g.group_object_id}
             onClick={() => focusState(g.group_object_id, "SWIPE")}
             className={cn(
-              "shrink-0 snap-center rounded-chip px-4 py-2 text-[13px] font-semibold transition-colors",
+              "pressable min-h-[40px] shrink-0 snap-center rounded-chip px-4 py-2 text-[13px] font-semibold transition-colors duration-quick ease-out",
               active
                 ? "bg-primary text-white"
                 : "bg-surface text-ink-soft shadow-card hover:text-ink",

@@ -19,7 +19,7 @@ export function ProfileClient() {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-surface-sunken px-4 pb-32 pt-safe-t">
-      <h1 className="pt-8 text-2xl font-extrabold text-ink">Profile</h1>
+      <h1 className="pt-8 text-2xl font-extrabold tracking-display text-ink">Profile</h1>
 
       <div className="mt-6 flex items-center gap-4 rounded-card bg-surface p-4 shadow-card">
         <span className="h-14 w-14 shrink-0 overflow-hidden rounded-full">
@@ -57,7 +57,7 @@ export function ProfileClient() {
           <div className="mt-3 flex gap-2 border-t border-line pt-3">
             <Link
               href="/explore"
-              className="flex-1 rounded-chip bg-primary-soft py-2 text-center text-[13px] font-bold text-primary-deep"
+              className="pressable flex min-h-tap flex-1 items-center justify-center rounded-chip bg-primary-soft py-2 text-center text-[13px] font-bold text-primary-deep"
             >
               Change
             </Link>
@@ -67,7 +67,7 @@ export function ProfileClient() {
                 clearHomeLga();
                 setHome(null);
               }}
-              className="flex-1 rounded-chip bg-surface-sunken py-2 text-center text-[13px] font-bold text-ink-soft"
+              className="pressable flex min-h-tap flex-1 items-center justify-center rounded-chip bg-surface-sunken py-2 text-center text-[13px] font-bold text-ink-soft"
             >
               Clear
             </button>
@@ -80,7 +80,7 @@ export function ProfileClient() {
           </p>
           <Link
             href="/explore"
-            className="mt-3 block rounded-chip bg-primary py-2.5 text-center text-[13px] font-bold text-white"
+            className="pressable mt-3 flex min-h-tap items-center justify-center rounded-chip bg-primary py-2.5 text-center text-[13px] font-bold text-white"
           >
             Discover where you belong
           </Link>

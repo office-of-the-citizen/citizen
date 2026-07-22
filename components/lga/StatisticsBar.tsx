@@ -27,7 +27,7 @@ export function StatisticsBar({ cells }: { cells: StatCell[] }) {
             key={cell.key}
             className={cn(
               "flex min-w-0 items-center gap-2 px-2 py-1",
-              index > 0 && "border-l border-slate-200/90",
+              index > 0 && "border-l border-line/90",
               index === 0 && "pl-0",
               index === cells.length - 1 && "pr-0",
             )}
@@ -36,16 +36,16 @@ export function StatisticsBar({ cells }: { cells: StatCell[] }) {
               name={cell.icon}
               size={20}
               strokeWidth={1.75}
-              className="shrink-0 text-slate-400"
+              className="shrink-0 text-ink-hint"
             />
             <div className="min-w-0 leading-none">
-              <p className="truncate text-[11px] font-medium text-slate-400">
+              <p className="truncate text-[11px] font-medium text-ink-faint">
                 {cell.label}
               </p>
               <p
                 className={cn(
                   "mt-1 truncate text-[15px] font-bold tabular-nums tracking-tight",
-                  cell.unavailable ? "text-slate-300" : "text-slate-800",
+                  cell.unavailable ? "text-ink-hint" : "text-ink",
                 )}
               >
                 {cell.display}

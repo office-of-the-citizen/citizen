@@ -82,10 +82,10 @@ function TimelineRow({ item, last }: { item: ActivityEntry; last: boolean }) {
         <div className="mt-0.5 flex items-center justify-between gap-2">
           <p className="truncate text-[15px] font-bold text-ink">{item.title}</p>
           <span className="flex shrink-0 items-center gap-1.5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-status-verified text-white">
               <Icon name="check" size={12} strokeWidth={3} />
             </span>
-            <Icon name="chevron-right" size={15} className="text-ink-faint" />
+            <Icon name="chevron-right" size={15} className="text-ink-hint" />
           </span>
         </div>
         {item.summary ? (

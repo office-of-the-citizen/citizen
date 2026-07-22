@@ -141,9 +141,9 @@ export function NigeriaMap({
             }}
             className="cursor-pointer outline-none transition-[fill,opacity] duration-300"
             style={{
-              fill: isFocused ? "rgb(14 138 76)" : "rgb(207 228 216)",
+              fill: isFocused ? "rgb(var(--c-primary))" : "rgb(var(--c-primary-faint))",
               opacity: dimmed ? 0.28 : 1,
-              stroke: "#ffffff",
+              stroke: "rgb(var(--c-surface))",
               strokeWidth: viewBox.w / 500,
             }}
           />

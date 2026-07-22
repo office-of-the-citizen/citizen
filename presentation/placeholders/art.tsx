@@ -5,7 +5,15 @@
  * Each piece is deterministic SVG so every page always feels visually
  * complete. Replacing this artwork with commissioned art means editing this
  * file (or the media manifest) only — never a React screen component.
+ *
+ * Colour discipline: fixed fills resolve to the token sheet
+ * (presentation/tokens/theme.css) via CSS custom properties. Only the
+ * generative landscape derives hues procedurally — from the civic green
+ * family, seeded per place so each community's art is its own.
  */
+
+const token = (name: string, alpha?: number) =>
+  alpha === undefined ? `rgb(var(${name}))` : `rgb(var(${name}) / ${alpha})`;
 
 /** Soft rolling-landscape artwork used when no header photograph exists. */
 export function HeaderArt({ seed = 0 }: { seed?: number }) {
@@ -24,7 +32,7 @@ export function HeaderArt({ seed = 0 }: { seed?: number }) {
         </linearGradient>
       </defs>
       <rect width="400" height="240" fill="url(#ph-sky)" />
-      <circle cx="322" cy="58" r="26" fill="#f8fafc" opacity="0.22" />
+      <circle cx="322" cy="58" r="26" fill={token("--c-surface")} opacity="0.22" />
       <path
         d="M0 150 Q60 108 130 138 T280 132 T400 150 V240 H0 Z"
         fill={`hsl(${150 + hueShift} 38% 26%)`}
@@ -39,7 +47,7 @@ export function HeaderArt({ seed = 0 }: { seed?: number }) {
         d="M0 206 Q100 178 210 198 T400 200 V240 H0 Z"
         fill={`hsl(${146 + hueShift} 45% 13%)`}
       />
-      <g fill="#f8fafc" opacity="0.16">
+      <g fill={token("--c-surface")} opacity="0.16">
         <rect x="252" y="150" width="10" height="26" rx="1.5" />
         <rect x="266" y="140" width="12" height="36" rx="1.5" />
         <rect x="282" y="156" width="9" height="20" rx="1.5" />
@@ -51,9 +59,21 @@ export function HeaderArt({ seed = 0 }: { seed?: number }) {
 /** Portrait artwork — “Official photograph unavailable.” */
 export function PortraitArt({ tone = "green" }: { tone?: "green" | "blue" | "neutral" }) {
   const palette = {
-    green: { bg: "#e7f6ee", mid: "#bfe6d2", fg: "#0e8a4c" },
-    blue: { bg: "#eff6ff", mid: "#c9e0fb", fg: "#2563eb" },
-    neutral: { bg: "#f1f5f9", mid: "#d8e0e9", fg: "#64748b" },
+    green: {
+      bg: token("--c-primary-soft"),
+      mid: token("--c-primary-faint"),
+      fg: token("--c-primary"),
+    },
+    blue: {
+      bg: token("--c-status-reference-soft"),
+      mid: token("--c-status-reference", 0.25),
+      fg: token("--c-status-reference"),
+    },
+    neutral: {
+      bg: token("--c-status-unknown-soft"),
+      mid: token("--c-status-unknown", 0.22),
+      fg: token("--c-status-unknown"),
+    },
   }[tone];
   return (
     <svg viewBox="0 0 96 96" className="h-full w-full" aria-hidden="true">
@@ -81,12 +101,13 @@ export function SealArt({ label }: { label: string }) {
     .slice(0, 2)
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
+  const green = token("--c-primary");
   return (
     <svg viewBox="0 0 96 96" className="h-full w-full" aria-hidden="true">
-      <circle cx="48" cy="48" r="46" fill="#f8fafc" />
-      <circle cx="48" cy="48" r="46" fill="none" stroke="#0e8a4c" strokeWidth="3" />
-      <circle cx="48" cy="48" r="37" fill="none" stroke="#0e8a4c" strokeOpacity="0.35" strokeWidth="1.5" />
-      <g fill="none" stroke="#0e8a4c" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="48" cy="48" r="46" fill={token("--c-surface")} />
+      <circle cx="48" cy="48" r="46" fill="none" stroke={green} strokeWidth="3" />
+      <circle cx="48" cy="48" r="37" fill="none" stroke={green} strokeOpacity="0.35" strokeWidth="1.5" />
+      <g fill="none" stroke={green} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
         <path d="m48 26 13 7.4H35z" transform="translate(0 4)" />
         <path d="M38 38v12M44.7 38v12M51.4 38v12M58 38v12M35 52h26" transform="translate(0 4)" />
       </g>
@@ -96,12 +117,12 @@ export function SealArt({ label }: { label: string }) {
         textAnchor="middle"
         fontSize="11"
         fontWeight="700"
-        fill="#095c33"
+        fill={token("--c-primary-deep")}
         fontFamily="ui-sans-serif, system-ui"
       >
         {initials || "NG"}
       </text>
-      <g fill="#0e8a4c">
+      <g fill={green}>
         <circle cx="20" cy="48" r="1.8" />
         <circle cx="76" cy="48" r="1.8" />
       </g>
@@ -113,9 +134,9 @@ export function SealArt({ label }: { label: string }) {
 export function AvatarArt() {
   return (
     <svg viewBox="0 0 48 48" className="h-full w-full" aria-hidden="true">
-      <rect width="48" height="48" fill="#e7f6ee" />
-      <circle cx="24" cy="19" r="8" fill="#0e8a4c" opacity="0.75" />
-      <path d="M8 44c2-9 8-13 16-13s14 4 16 13z" fill="#0e8a4c" opacity="0.55" />
+      <rect width="48" height="48" fill={token("--c-primary-soft")} />
+      <circle cx="24" cy="19" r="8" fill={token("--c-primary")} opacity="0.75" />
+      <path d="M8 44c2-9 8-13 16-13s14 4 16 13z" fill={token("--c-primary")} opacity="0.55" />
     </svg>
   );
 }

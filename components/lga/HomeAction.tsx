@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { getHomeLga, setHomeLga } from "@/lib/home-storage";
 import { Icon } from "@/presentation/icons/Icon";
+import { cn } from "@/lib/cn";
 
 /** “Set as Home” — client-only preference; the OS never learns it. */
 export function HomeAction({
@@ -21,15 +22,18 @@ export function HomeAction({
     setIsHome(getHomeLga()?.slug === slug);
   }, [slug]);
 
+  const chip = "flex items-center gap-1 whitespace-nowrap rounded-chip text-[11px] font-bold";
+
   if (isHome === null) return <span className="h-7" aria-hidden="true" />;
 
   return isHome ? (
     <span
-      className={
+      className={cn(
+        chip,
         onDark
-          ? "flex items-center gap-1 whitespace-nowrap rounded-chip bg-white/20 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md"
-          : "flex items-center gap-1 whitespace-nowrap rounded-chip bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary-deep"
-      }
+          ? "bg-white/20 px-3 py-1.5 text-white backdrop-blur-md"
+          : "bg-primary-soft px-2.5 py-1 text-primary-deep",
+      )}
     >
       <Icon name="home" size={12} strokeWidth={2.6} />
       Home
@@ -41,11 +45,13 @@ export function HomeAction({
         setHomeLga(slug, name);
         setIsHome(true);
       }}
-      className={
+      className={cn(
+        chip,
+        "pressable transition-colors duration-quick ease-out",
         onDark
-          ? "flex items-center gap-1 whitespace-nowrap rounded-chip bg-white/20 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md transition-colors hover:bg-white/30"
-          : "flex items-center gap-1 whitespace-nowrap rounded-chip border border-primary/40 px-2.5 py-1 text-[11px] font-bold text-primary transition-colors hover:bg-primary-soft"
-      }
+          ? "bg-white/20 px-3 py-1.5 text-white backdrop-blur-md hover:bg-white/30"
+          : "border border-primary/40 px-2.5 py-1 text-primary hover:bg-primary-soft",
+      )}
     >
       <Icon name="home" size={12} strokeWidth={2.6} />
       Set as Home

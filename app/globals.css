@@ -13,6 +13,32 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* ── Interaction defaults ──────────────────────────────────────────────
+ * Every interactive element responds on pointer-down and shows a visible
+ * focus ring for keyboard citizens. Individual components may refine, but
+ * nothing may remove feedback entirely. */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-focus) / 0.9);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Pressable surfaces: instant scale feedback on touch-down. */
+.pressable {
+  transition: transform var(--duration-press) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+.pressable-subtle {
+  transition: transform var(--duration-press) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.pressable-subtle:active {
+  transform: scale(0.985);
+}
+
 /* Hide scrollbars on horizontal carousels while keeping them scrollable */
 .no-scrollbar {
   -ms-overflow-style: none;
@@ -20,6 +46,36 @@ body {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* ── The locked device shell (desktop only) ────────────────────────────
+ * On large screens the application renders inside a fixed phone frame:
+ * the window into the operating system. The shell never moves; only the
+ * content inside it does. `transform` on the screen creates a containing
+ * block so `position: fixed` chrome (bottom navigation) anchors to the
+ * device, not the browser window. */
+@media (min-width: 1024px) {
+  body {
+    overflow: hidden; /* the website holds still; the OS scrolls inside */
+  }
+  /* The screen is the containing block for the app's fixed chrome (the
+   * transform makes `position: fixed` anchor here, so the bottom navigation
+   * pins to the device). The viewport INSIDE it does the scrolling — chrome
+   * and scroller are siblings, so chrome never scrolls away. */
+  .device-screen {
+    --shell-top-inset: 3.25rem;
+    --shell-bottom-inset: 0.5rem;
+    transform: translateZ(0);
+  }
+  .device-viewport {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .device-viewport::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

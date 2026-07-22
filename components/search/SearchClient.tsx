@@ -62,7 +62,7 @@ export function SearchClient({ navigation }: { navigation: NavigationIndex }) {
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-surface-sunken px-4 pb-32 pt-safe-t">
-      <h1 className="pt-8 text-2xl font-extrabold text-ink">Search</h1>
+      <h1 className="pt-8 text-2xl font-extrabold tracking-display text-ink">Search</h1>
       <p className="mt-1 text-sm text-ink-soft">
         Search all {total.toLocaleString()} public records.
       </p>
@@ -83,6 +83,15 @@ export function SearchClient({ navigation }: { navigation: NavigationIndex }) {
         />
       </div>
 
+      {/* Announce result changes to screen readers without stealing focus */}
+      <p role="status" aria-live="polite" className="sr-only">
+        {state.status === "ready"
+          ? `${state.results.length} result${state.results.length === 1 ? "" : "s"}`
+          : state.status === "unavailable"
+            ? "Search is temporarily unavailable"
+            : ""}
+      </p>
+
       <div className="mt-4 space-y-2">
         {state.results.map((hit, i) => (
           <motion.div
@@ -94,7 +103,7 @@ export function SearchClient({ navigation }: { navigation: NavigationIndex }) {
           >
             <Link
               href={`/${hit.record_type}/${hit.slug}`}
-              className="flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3.5 shadow-card transition-colors active:bg-primary-soft"
+              className="pressable-subtle flex min-h-tap items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3.5 shadow-card transition-colors duration-quick ease-out active:bg-primary-soft"
             >
               <span className="flex min-w-0 items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">

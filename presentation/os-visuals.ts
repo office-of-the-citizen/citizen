@@ -40,13 +40,48 @@ export interface RoleClasses {
   blue: boolean;
 }
 
-/** OS colour role → this application's palette classes. Unknown roles render neutral. */
+/** OS colour role → this application's status-token classes. Unknown roles render neutral. */
 const OS_ROLES: Record<string, RoleClasses> = {
-  VERIFIED: { bubble: "bg-primary text-white", text: "text-primary", blue: false },
-  GOVERNED_OBJECT: { bubble: "bg-accent-blue text-white", text: "text-accent-blue", blue: true },
-  ATTENTION: { bubble: "bg-accent-amber text-white", text: "text-accent-amber", blue: false },
-  UNKNOWN: { bubble: "bg-surface-sunken text-ink-faint", text: "text-unknown", blue: false },
-  CONFLICT: { bubble: "bg-accent-amber text-white", text: "text-accent-amber", blue: false },
+  VERIFIED: {
+    bubble: "bg-status-verified text-white",
+    text: "text-status-verified",
+    blue: false,
+  },
+  GOVERNED_OBJECT: {
+    bubble: "bg-status-reference text-white",
+    text: "text-status-reference",
+    blue: true,
+  },
+  ATTENTION: {
+    bubble: "bg-status-contested text-white",
+    text: "text-status-contested",
+    blue: false,
+  },
+  UNKNOWN: {
+    bubble: "bg-status-unknown-soft text-status-unknown",
+    text: "text-status-unknown",
+    blue: false,
+  },
+  CONFLICT: {
+    bubble: "bg-status-contested text-white",
+    text: "text-status-contested",
+    blue: false,
+  },
+  PENDING: {
+    bubble: "bg-status-pending text-white",
+    text: "text-status-pending",
+    blue: false,
+  },
+  HISTORICAL: {
+    bubble: "bg-status-historical text-white",
+    text: "text-status-historical",
+    blue: false,
+  },
+  SUPERSEDED: {
+    bubble: "bg-status-historical text-white",
+    text: "text-status-historical",
+    blue: false,
+  },
 };
 
 const NEUTRAL: RoleClasses = {

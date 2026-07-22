@@ -20,7 +20,7 @@ export function ConstitutionalMark({
     <span
       className={cn(
         "inline-flex items-center justify-center rounded-full text-white ring-2 ring-surface",
-        accent === "blue" ? "bg-accent-blue" : "bg-primary",
+        accent === "blue" ? "bg-status-reference" : "bg-status-verified",
         className,
       )}
       style={{ width: size, height: size }}

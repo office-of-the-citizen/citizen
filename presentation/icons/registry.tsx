@@ -29,6 +29,11 @@ export type IconAlias =
   | "map"
   | "close"
   | "info"
+  | "clock"
+  | "archive"
+  | "hash"
+  | "arrow-up-right"
+  | "shield"
   /** Stats bar — match ratified LGA profile reference. */
   | "stat-population"
   | "stat-area"
@@ -167,6 +172,35 @@ const GLYPHS: Record<IconAlias, ReactNode> = {
     <g {...strokeProps}>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v5M12 7.5v.5" />
+    </g>
+  ),
+  clock: (
+    <g {...strokeProps}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </g>
+  ),
+  archive: (
+    <g {...strokeProps}>
+      <rect x="3" y="4" width="18" height="5" rx="1.5" />
+      <path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9" />
+      <path d="M10 13h4" />
+    </g>
+  ),
+  hash: (
+    <g {...strokeProps}>
+      <path d="M9.5 3.5 7.5 20.5M16.5 3.5l-2 17M4.5 8.5h16M3.5 15.5h16" />
+    </g>
+  ),
+  "arrow-up-right": (
+    <g {...strokeProps}>
+      <path d="M7 17 17 7M9 7h8v8" />
+    </g>
+  ),
+  shield: (
+    <g {...strokeProps}>
+      <path d="M12 2.5 20 5.5v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10v-6z" />
+      <path d="m8.8 12 2.2 2.2 4.2-4.4" />
     </g>
   ),
   // Two-person outline (reference: population)

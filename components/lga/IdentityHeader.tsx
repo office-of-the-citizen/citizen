@@ -67,7 +67,7 @@ export function IdentityHeader({
         <div className="mt-3 flex w-full items-center justify-between gap-3">
           <Link
             href="/explore"
-            className="flex min-w-0 items-center gap-2 rounded-chip bg-black/30 px-3.5 py-2 text-sm font-medium text-white backdrop-blur-md transition-colors hover:bg-black/40"
+            className="pressable flex min-h-[40px] min-w-0 items-center gap-2 rounded-chip bg-black/30 px-3.5 py-2 text-sm font-medium text-white backdrop-blur-md transition-colors duration-quick ease-out hover:bg-black/40"
           >
             <Icon name="pin" size={16} />
             <span className="truncate">
@@ -80,7 +80,7 @@ export function IdentityHeader({
             <Link
               href="/search"
               aria-label="Search"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-white/30"
+              className="pressable flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors duration-quick ease-out hover:bg-white/30"
             >
               <Icon name="search" size={19} />
             </Link>
@@ -110,7 +110,7 @@ export function IdentityHeader({
           )}
         </div>
         <div className="min-w-0">
-          <h1 className="text-[2rem] font-extrabold leading-tight text-white drop-shadow-sm">
+          <h1 className="text-[2rem] font-extrabold leading-tight tracking-display text-white drop-shadow-sm">
             {name}
           </h1>
           {lineage.length ? (

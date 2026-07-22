@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import type { PublicRecord } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
+import { Disclosure } from "@/components/ui/Disclosure";
 import { cn } from "@/lib/cn";
 
 /** Quiet civic-education accordion — projected copy, deliberately subtle. */
@@ -26,30 +27,31 @@ export function CivicJourney({ record }: { record: PublicRecord }) {
               <button
                 type="button"
                 onClick={() => setOpenStep(open ? null : step.step_code)}
-                className="flex w-full items-center justify-between gap-3 py-3 text-left"
+                className="pressable-subtle flex min-h-tap w-full items-center justify-between gap-3 py-3 text-left"
                 aria-expanded={open}
               >
-                <span className="text-[14px] font-semibold text-ink-soft">{step.title}</span>
-                <Icon
-                  name="chevron-down"
-                  size={16}
-                  className={cn("shrink-0 text-ink-faint transition-transform", open && "rotate-180")}
-                />
+                <span
+                  className={cn(
+                    "text-[14px] font-semibold transition-colors duration-quick ease-out",
+                    open ? "text-ink" : "text-ink-soft",
+                  )}
+                >
+                  {step.title}
+                </span>
+                <motion.span
+                  animate={{ rotate: open ? 180 : 0 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  className="shrink-0 text-ink-hint"
+                >
+                  <Icon name="chevron-down" size={16} />
+                </motion.span>
               </button>
-              <AnimatePresence initial={false}>
-                {open && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="pb-3 text-[13px] leading-relaxed text-ink-soft">{step.body}</p>
-                    <p className="pb-3 text-[11px] font-medium text-ink-faint">{step.source_reference}</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <Disclosure open={open}>
+                <p className="pb-3 text-[13px] leading-relaxed text-ink-soft">{step.body}</p>
+                <p className="pb-3 text-[11px] font-medium text-ink-faint">
+                  {step.source_reference}
+                </p>
+              </Disclosure>
             </div>
           );
         })}

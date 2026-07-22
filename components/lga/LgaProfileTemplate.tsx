@@ -1,6 +1,9 @@
+import Link from "next/link";
+
 import type { PermanentSpatialObject } from "@office-of-the-citizen/caos-sdk";
 import type { PublicRecord } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { IdentityHeader } from "./IdentityHeader";
 import { ChairmanCard } from "./ChairmanCard";
 import { RelationshipRow } from "./RelationshipRow";
@@ -45,7 +48,7 @@ export function LgaProfileTemplate({
       <IdentityHeader permanent={permanent} breadcrumb={breadcrumb} truth={truth} />
 
       {/* Rounded sheet overlapping the hero — white surface per reference */}
-      <div className="relative -mt-9 rounded-t-[1.75rem] bg-white">
+      <div className="relative -mt-9 rounded-t-sheet bg-surface">
         <div className="px-4 pb-4 pt-5">
           <StatisticsBar cells={stats} />
         </div>
@@ -67,29 +70,46 @@ export function LgaProfileTemplate({
               <BudgetCard record={truth} />
               <ActivityTimeline record={truth} />
               <CivicJourney record={truth} />
-              <p className="px-2 pb-2 pt-1 text-center text-[10px] leading-relaxed text-ink-faint">
-                Public record built{" "}
-                {new Date(truth.provenance.built_at).toLocaleDateString("en-NG", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
-                {" · "}
-                {truth.provenance.build_input_hash.slice(0, 19)}…
-              </p>
+              <RecordFootnote truth={truth} />
             </>
           ) : (
-            <div className="rounded-2xl bg-white px-4 py-6 text-center shadow-sm ring-1 ring-black/[0.04]">
-              <p className="text-sm font-semibold text-ink">Live constitutional truth unavailable</p>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
-                Place identity and permanent statistics are shown from the published
-                geography snapshot. Chairman, representatives, and population will
-                appear when the operating system is reachable.
-              </p>
+            <div className="rounded-card bg-surface py-6 shadow-card">
+              <EmptyState
+                icon="document"
+                tone="unknown"
+                title="Live constitutional truth unavailable"
+                body="Place identity and permanent statistics are shown from the published geography snapshot. Chairman, representatives, and population will appear when the operating system is reachable."
+              />
             </div>
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Quiet doorway to the full constitutional record. Provenance renders
+ * verbatim; the link rewards the curious without shouting at anyone else.
+ */
+function RecordFootnote({ truth }: { truth: PublicRecord }) {
+  return (
+    <Link
+      href={`/lga/${truth.slug}/record`}
+      className="pressable-subtle mx-auto flex min-h-tap w-fit items-center gap-2 rounded-chip px-4 py-2 text-[11px] leading-relaxed text-ink-faint transition-colors duration-quick ease-out hover:text-ink-soft"
+    >
+      <Icon name="shield" size={13} className="shrink-0 text-primary/60" />
+      <span>
+        Public record built{" "}
+        {new Date(truth.provenance.built_at).toLocaleDateString("en-NG", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })}
+        {" · "}
+        {truth.provenance.build_input_hash.slice(0, 19)}…
+      </span>
+      <Icon name="chevron-right" size={12} className="shrink-0" />
+    </Link>
   );
 }

@@ -1,19 +1,60 @@
 /**
  * Citizen Application design tokens — the single visual authority.
  *
- * Every colour, radius, shadow and font used by the application resolves
- * here. Designers retheme the application by editing this sheet; no React
- * component may hardcode a visual value.
+ * Every colour, radius, shadow, easing and font used by the application
+ * resolves here. Designers retheme the application by editing this sheet;
+ * no React component may hardcode a visual value.
+ *
+ * ─── The constitutional colour language ─────────────────────────────────
+ *
+ * This is not a decorative palette. Every colour answers a constitutional
+ * question:
+ *
+ *   GREEN   — affirmed truth. The civic identity of the Republic; used for
+ *             verified claims and primary actions. Green is earned, never
+ *             decorative: it appears only where the record affirms.
+ *   BLUE    — governed reference. A fact that lives in a constitutional
+ *             repository but is referenced rather than freshly verified
+ *             (e.g. an office holder recognised as a governed object).
+ *   AMBER   — attention. The record needs the citizen's awareness:
+ *             contested claims, conflicts, matters under challenge.
+ *   GREY    — governed absence. UNKNOWN is a constitutional state, not an
+ *             error; grey renders honest silence, never failure.
+ *   SLATE   — pending. A claim admitted but not yet resolved; quieter than
+ *             amber because nothing is wrong, the clock is simply running.
+ *   SEPIA   — the past. Historical and superseded truth: still true of its
+ *             time, no longer the present record.
  *
  * Colour values are R G B triplets so Tailwind can compose alpha.
  */
 :root {
-  /* Civic green — primary identity */
-  --c-primary: 14 138 76; /* #0e8a4c */
-  --c-primary-deep: 9 92 51; /* #095c33 */
-  --c-primary-soft: 231 246 238; /* #e7f6ee */
+  /* ── Core palette — civic green, the identity of affirmed truth ────── */
+  --c-primary: 14 138 76; /* #0e8a4c — affirmed truth, primary action */
+  --c-primary-deep: 9 92 51; /* #095c33 — pressed states, emphasis on soft */
+  --c-primary-soft: 231 246 238; /* #e7f6ee — quiet affirmed surface */
+  --c-primary-faint: 207 228 216; /* #cfe4d8 — resting map fill, quiet green line */
 
-  /* Category accents (timeline, relationship chips) */
+  /* ── Status palette — constitutional postures ──────────────────────── */
+  /* Verified: a claim the OS has verified against evidence. */
+  --c-status-verified: 14 138 76; /* = primary; verification IS the identity */
+  --c-status-verified-soft: 231 246 238;
+  /* Governed reference: recognised constitutional object, blue family. */
+  --c-status-reference: 37 99 235; /* #2563eb */
+  --c-status-reference-soft: 239 246 255; /* #eff6ff */
+  /* Contested / conflict: claims under active challenge. */
+  --c-status-contested: 217 119 6; /* #d97706 — amber demands attention */
+  --c-status-contested-soft: 255 251 235; /* #fffbeb */
+  /* Pending: admitted, awaiting resolution. Calm — nothing is wrong. */
+  --c-status-pending: 71 105 145; /* #476991 — slate blue, patient */
+  --c-status-pending-soft: 238 243 249; /* #eef3f9 */
+  /* Unknown: governed absence. Honest silence, never an error state. */
+  --c-status-unknown: 107 114 128; /* #6b7280 */
+  --c-status-unknown-soft: 243 244 246; /* #f3f4f6 */
+  /* Historical / superseded: true of its time, not the present record. */
+  --c-status-historical: 146 118 91; /* #92765b — sepia, the archive */
+  --c-status-historical-soft: 248 243 237; /* #f8f3ed */
+
+  /* ── Category accents (timeline, relationship chips) ───────────────── */
   --c-accent-blue: 37 99 235; /* #2563eb */
   --c-accent-blue-soft: 239 246 255; /* #eff6ff */
   --c-accent-purple: 124 58 237; /* #7c3aed */
@@ -21,28 +62,66 @@
   --c-accent-amber: 217 119 6; /* #d97706 */
   --c-accent-amber-soft: 255 251 235; /* #fffbeb */
 
-  /* Text */
-  --c-ink: 15 23 42; /* #0f172a */
-  --c-ink-soft: 71 85 105; /* #475569 */
-  --c-ink-faint: 148 163 184; /* #94a3b8 */
+  /* ── Neutral palette — text ────────────────────────────────────────── */
+  --c-ink: 15 23 42; /* #0f172a — primary reading colour */
+  --c-ink-soft: 71 85 105; /* #475569 — supporting copy (AA on white) */
+  --c-ink-faint: 100 116 139; /* #64748b — captions & labels (AA at 14px+) */
+  --c-ink-hint: 148 163 184; /* #94a3b8 — decorative only: icons, dividers */
 
-  /* Surfaces */
-  --c-surface: 255 255 255;
-  --c-surface-sunken: 244 247 245; /* #f4f7f5 */
-  --c-line: 226 232 240; /* #e2e8f0 */
+  /* ── Surface palette ───────────────────────────────────────────────── */
+  --c-surface: 255 255 255; /* raised cards */
+  --c-surface-sunken: 244 247 245; /* #f4f7f5 — the page floor, green-tinted */
+  --c-surface-overlay: 15 23 42; /* scrim base — compose with alpha */
+  --c-line: 226 232 240; /* #e2e8f0 — hairlines and separators */
+  --c-line-strong: 203 213 225; /* #cbd5e1 — bordered inputs, frames */
 
-  /* Governed UNKNOWN posture (matches OS status registry neutral) */
+  /* ── Frame palette — the world OUTSIDE the device screen ───────────── */
+  /* The desktop website is night around a lit screen: the device is the
+   * only bright object, so the eye goes to the OS, never the chrome. */
+  --c-frame-night: 11 18 32; /* #0b1220 — website backdrop behind the device */
+  --c-frame-body: 15 23 42; /* #0f172a — device hardware body and notch */
+
+  /* ── Interaction palette ───────────────────────────────────────────── */
+  --c-focus: 14 138 76; /* focus ring = affirmed green; compose w/ alpha */
+  --c-press: 231 246 238; /* pressed wash on light surfaces */
+  --c-disabled-ink: 148 163 184; /* text on disabled controls */
+  --c-disabled-surface: 241 245 249; /* disabled control fill */
+
+  /* ── Governed UNKNOWN posture (legacy alias, kept for compatibility) ─ */
   --c-unknown: 107 114 128; /* #6b7280 */
 
-  /* Geometry */
+  /* ── Geometry ──────────────────────────────────────────────────────── */
   --r-card: 1.25rem;
   --r-chip: 999px;
+  --r-sheet: 1.75rem;
+  --r-field: 1rem;
 
-  /* Elevation */
+  /* Minimum comfortable touch target (Apple HIG). */
+  --tap-target: 44px;
+
+  /* ── Elevation — higher surfaces cast deeper, softer shadows ───────── */
   --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.06);
+  --shadow-raised: 0 2px 6px rgb(15 23 42 / 0.06), 0 10px 32px rgb(15 23 42 / 0.1);
   --shadow-nav: 0 -4px 20px rgb(15 23 42 / 0.08);
+  --shadow-seal: 0 2px 10px rgb(14 138 76 / 0.28);
+  --shadow-device: 0 24px 80px rgb(15 23 42 / 0.35), 0 4px 16px rgb(15 23 42 / 0.2);
 
-  /* Type */
+  /* ── Motion — one vocabulary, used by CSS and Framer alike ─────────── */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* entrances, releases */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* sheets & drawers */
+  --duration-press: 120ms; /* pointer-down feedback */
+  --duration-quick: 180ms; /* chips, hovers, small reveals */
+  --duration-drawer: 260ms; /* disclosure drawers */
+  --duration-seal: 1600ms; /* the verification ritual hold */
+
+  /* ── Shell insets — the device shell raises these on desktop ───────── */
+  --shell-top-inset: 0px;
+  --shell-bottom-inset: 0px;
+
+  /* ── Type ──────────────────────────────────────────────────────────── */
   --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
+  --tracking-display: -0.02em; /* large headings tighten as they grow */
+  --tracking-label: 0.08em; /* small uppercase labels open up */
 }

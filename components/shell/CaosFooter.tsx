@@ -1,4 +1,4 @@
-import { CaosClient, CAOS_SDK_VERSION } from '@office-of-the-citizen/caos-sdk';
+import { CaosClient, CAOS_SDK_VERSION } from "@office-of-the-citizen/caos-sdk";
 
 function resolveGatewayUrl(): string | null {
   return (
@@ -8,34 +8,28 @@ function resolveGatewayUrl(): string | null {
   );
 }
 
-async function getIdentity() {
+/**
+ * Gateway version is live (optional). SDK version is always available from the
+ * installed package — never gate the footer on gateway reachability.
+ */
+async function getGatewayVersion(): Promise<string | null> {
   const gw = resolveGatewayUrl();
   if (!gw) return null;
 
   try {
-    const client = new CaosClient(gw);
-    return await client.getRuntimeIdentity();
+    const identity = await new CaosClient(gw).getRuntimeIdentity();
+    return identity.gatewayVersion;
   } catch {
     return null;
   }
 }
 
 export default async function CaosFooter() {
-  const identity = await getIdentity();
-  if (!identity) return null;
+  const gatewayVersion = await getGatewayVersion();
 
   return (
-    <footer
-      style={{
-        padding: '12px 20px',
-        fontSize: 11,
-        color: 'var(--color-muted, #94a3b8)',
-        textAlign: 'center',
-        opacity: 0.6,
-        lineHeight: 1.4,
-      }}
-    >
-      caOs {identity.gatewayVersion ?? '—'} | sdk: {CAOS_SDK_VERSION}
+    <footer className="px-5 py-3 text-center text-[11px] leading-relaxed text-ink-hint/70">
+      caOs {gatewayVersion ?? "—"} | sdk: {CAOS_SDK_VERSION}
     </footer>
   );
 }
