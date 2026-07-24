@@ -142,7 +142,7 @@ function QuestionContent() {
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="e.g. crn:s2:lga:ikeja or the name of a subject"
+              placeholder="e.g. caos:s2:lga:ikeja or the name of a subject"
               className="mt-2 w-full rounded-2xl border border-line bg-surface-sunken px-4 py-3 text-[15px] text-ink placeholder:text-ink-faint/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </label>

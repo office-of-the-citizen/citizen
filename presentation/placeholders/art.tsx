@@ -140,3 +140,97 @@ export function AvatarArt() {
     </svg>
   );
 }
+
+/**
+ * Institutional seal — Coat of Arms style artwork for federal and state
+ * institutions. Uses the same green identity as SealArt but with a shield
+ * motif to distinguish institutional offices from place seals.
+ */
+export function InstitutionSealArt({ label, level = "federal" }: { label: string; level?: "federal" | "state" | "local" }) {
+  const initials = label
+    .split(/\s+/)
+    .filter((w) => !["of", "the", "and", "for"].includes(w.toLowerCase()))
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+
+  const palette = {
+    federal: { fg: token("--c-primary"), bg: token("--c-primary-soft"), deep: token("--c-primary-deep") },
+    state: { fg: token("--c-status-reference"), bg: token("--c-status-reference-soft"), deep: token("--c-status-reference") },
+    local: { fg: token("--c-accent-amber"), bg: token("--c-accent-amber-soft"), deep: token("--c-accent-amber") },
+  }[level];
+
+  return (
+    <svg viewBox="0 0 96 96" className="h-full w-full" aria-hidden="true">
+      <circle cx="48" cy="48" r="46" fill={palette.bg} />
+      <circle cx="48" cy="48" r="46" fill="none" stroke={palette.fg} strokeWidth="3" />
+      <circle cx="48" cy="48" r="37" fill="none" stroke={palette.fg} strokeOpacity="0.3" strokeWidth="1.5" />
+      {/* Shield motif */}
+      <g fill="none" stroke={palette.fg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M48 22l16 6v14c0 10-7 18-16 22-9-4-16-12-16-22V28z" />
+        <path d="M48 28v28" strokeOpacity="0.3" />
+        <path d="M36 34h24" strokeOpacity="0.3" />
+      </g>
+      <text
+        x="48"
+        y="50"
+        textAnchor="middle"
+        fontSize="14"
+        fontWeight="700"
+        fill={palette.deep}
+        fontFamily="ui-sans-serif, system-ui"
+      >
+        {initials || "NG"}
+      </text>
+      <g fill={palette.fg}>
+        <circle cx="20" cy="48" r="1.8" />
+        <circle cx="76" cy="48" r="1.8" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * Office header artwork — a generative landscape tinted per government level.
+ * Federal = deep green, State = blue, Local = warm amber.
+ */
+export function OfficeHeaderArt({ level, seed = 0 }: { level: "federal" | "state" | "local"; seed?: number }) {
+  const hueShift = (seed % 5) * 6 - 12;
+  const baseHue = { federal: 155, state: 215, local: 35 }[level];
+  return (
+    <svg
+      viewBox="0 0 400 240"
+      preserveAspectRatio="xMidYMid slice"
+      className="absolute inset-0 h-full w-full"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id={`oh-sky-${level}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={`hsl(${baseHue + hueShift} 45% 22%)`} />
+          <stop offset="100%" stopColor={`hsl(${baseHue + hueShift} 40% 34%)`} />
+        </linearGradient>
+      </defs>
+      <rect width="400" height="240" fill={`url(#oh-sky-${level})`} />
+      <circle cx="322" cy="58" r="26" fill={token("--c-surface")} opacity="0.22" />
+      <path
+        d="M0 150 Q60 108 130 138 T280 132 T400 150 V240 H0 Z"
+        fill={`hsl(${baseHue + hueShift} 38% 26%)`}
+        opacity="0.85"
+      />
+      <path
+        d="M0 178 Q80 140 170 168 T340 162 T400 176 V240 H0 Z"
+        fill={`hsl(${baseHue + hueShift} 42% 19%)`}
+        opacity="0.95"
+      />
+      <path
+        d="M0 206 Q100 178 210 198 T400 200 V240 H0 Z"
+        fill={`hsl(${baseHue + hueShift} 45% 13%)`}
+      />
+      <g fill={token("--c-surface")} opacity="0.16">
+        <rect x="252" y="150" width="10" height="26" rx="1.5" />
+        <rect x="266" y="140" width="12" height="36" rx="1.5" />
+        <rect x="282" y="156" width="9" height="20" rx="1.5" />
+      </g>
+    </svg>
+  );
+}

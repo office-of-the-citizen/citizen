@@ -55,8 +55,11 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
  */
 export function BottomNav() {
   const pathname = usePathname();
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" || pathname.startsWith("/lga") : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/" || pathname.startsWith("/lga");
+    if (href === "/explore") return pathname.startsWith("/explore") || pathname.startsWith("/offices");
+    return pathname.startsWith(href);
+  };
 
   return (
     <nav

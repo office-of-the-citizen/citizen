@@ -16,6 +16,7 @@ import { useDiscoveryStore } from "@/lib/selection-store";
 import { NigeriaMap } from "./NigeriaMap";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeRise, springGentle } from "@/presentation/animations/motion";
+import { OfficeEntryCard } from "@/components/offices/OfficeEntryCard";
 import { cn } from "@/lib/cn";
 
 export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
@@ -190,6 +191,11 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Office entry — below the discovery flow */}
+      <div className="mt-4 px-4">
+        <OfficeEntryCard />
       </div>
     </div>
   );

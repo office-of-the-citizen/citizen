@@ -43,7 +43,15 @@ export type IconAlias =
   | "hand-raise"
   | "flag"
   | "eye"
-  | "send";
+  | "send"
+  /* Office pages — institutional and legislative icons */
+  | "building"
+  | "gavel"
+  | "scale"
+  | "star"
+  | "chart-bar"
+  | "mail"
+  | "promise";
 
 const strokeProps = {
   fill: "none",
@@ -276,6 +284,54 @@ const GLYPHS: Record<IconAlias, ReactNode> = {
     <g {...strokeProps}>
       <path d="m3 11 18-8-8 18-2-8z" />
       <path d="M11 19 3 11" />
+    </g>
+  ),
+  building: (
+    <g {...strokeProps}>
+      <rect x="4" y="10" width="16" height="11" rx="1" />
+      <path d="M12 3v7M8 7l4-4 4 4" />
+      <path d="M9 14h2v3H9zM13 14h2v3h-2z" />
+    </g>
+  ),
+  gavel: (
+    <g {...strokeProps}>
+      <path d="m14.5 3.5 6 6-3 3-6-6z" />
+      <path d="m11.5 6.5-7 7 3 3 7-7" />
+      <path d="M4 21h8" />
+      <path d="M8 17l-4 4" />
+    </g>
+  ),
+  scale: (
+    <g {...strokeProps}>
+      <path d="M12 3v18" />
+      <path d="M5 7h14" />
+      <path d="M5 7l-2 6a3.5 3.5 0 0 0 7 0L8 7" />
+      <path d="M19 7l-2 6a3.5 3.5 0 0 0 7 0l-2-6z" transform="translate(-5 0)" />
+    </g>
+  ),
+  star: (
+    <g {...strokeProps}>
+      <path d="m12 2.5 2.9 5.9 6.6.9-4.7 4.6 1.1 6.5L12 17.3l-5.9 3.1 1.1-6.5L2.5 9.3l6.6-.9z" />
+    </g>
+  ),
+  "chart-bar": (
+    <g {...strokeProps}>
+      <rect x="3" y="14" width="4" height="7" rx="1" />
+      <rect x="10" y="8" width="4" height="13" rx="1" />
+      <rect x="17" y="3" width="4" height="18" rx="1" />
+    </g>
+  ),
+  mail: (
+    <g {...strokeProps}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </g>
+  ),
+  promise: (
+    <g {...strokeProps}>
+      <path d="M4 21V4" />
+      <path d="M4 4h13l-2 4 2 4H4" />
+      <path d="m16 15 2 2 4-4" />
     </g>
   ),
 };
