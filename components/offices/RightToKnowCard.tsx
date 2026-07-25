@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import type { RightToKnowItem } from "@/presentation/offices/types";
 import { Icon } from "@/presentation/icons/Icon";
+import { UI_COPY } from "@/presentation/copy";
 
 /**
  * Right to Know card — "Unavailable" card with reason + FOI link.
@@ -28,11 +29,11 @@ export function RightToKnowCard({
         <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-status-contested/10 text-status-contested">
           <Icon name="mail" size={18} />
         </span>
-        <h2 className="text-base font-bold text-ink">Right to Know</h2>
+        <h2 className="text-base font-bold text-ink">{UI_COPY.right_to_know_heading}</h2>
       </div>
 
       <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
-        The following information is not currently available in the public record. You have the right to request it.
+        {UI_COPY.right_to_know_intro}
       </p>
 
       <div className="mt-4 space-y-3">
@@ -46,7 +47,7 @@ export function RightToKnowCard({
 
       <div className="mt-4 rounded-2xl border border-line p-3.5">
         <p className="text-[12px] leading-relaxed text-ink-soft">
-          Under the <span className="font-semibold text-ink">Freedom of Information Act 2011</span>, you have the right to request information from {officeInstitution}. The FOI Act empowers every citizen to access public records and information.
+          {UI_COPY.right_to_know_foi_explanation.replace('public institutions', officeInstitution)}
         </p>
         <a
           href="https://foi.gov.ng"
@@ -55,7 +56,7 @@ export function RightToKnowCard({
           className="pressable-subtle mt-2 inline-flex items-center gap-1.5 text-[12px] font-bold text-primary"
         >
           <Icon name="arrow-up-right" size={12} />
-          Learn about your FOI rights
+          {UI_COPY.right_to_know_cta}
         </a>
       </div>
     </motion.section>

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 import type { OfficeEducation } from "@/presentation/offices/types";
 import { Icon } from "@/presentation/icons/Icon";
+import { UI_COPY } from "@/presentation/copy";
 import { Disclosure } from "@/components/ui/Disclosure";
 import { cn } from "@/lib/cn";
 
@@ -29,7 +30,7 @@ export function OfficeEducationCard({
         <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary-soft text-primary">
           <Icon name="info" size={18} />
         </span>
-        <h2 className="text-base font-bold text-ink">Did you know?</h2>
+        <h2 className="text-base font-bold text-ink">{UI_COPY.education_heading}</h2>
       </div>
 
       <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
@@ -39,7 +40,7 @@ export function OfficeEducationCard({
       <div className="mt-4 divide-y divide-line">
         {/* Facts section */}
         <FactsRow
-          label="About this office"
+          label={UI_COPY.education_about_office}
           icon="info"
           facts={education.facts}
           isOpen={openSection === "facts"}
@@ -48,7 +49,7 @@ export function OfficeEducationCard({
 
         {/* Rights section */}
         <FactsRow
-          label="Your rights"
+          label={UI_COPY.education_your_rights}
           icon="shield"
           facts={education.rights}
           isOpen={openSection === "rights"}

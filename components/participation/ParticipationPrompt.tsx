@@ -10,6 +10,7 @@
  */
 import Link from "next/link";
 import { Icon } from "@/presentation/icons/Icon";
+import { PARTICIPATION_PROMPTS } from "@/presentation/copy";
 import { cn } from "@/lib/cn";
 
 interface ParticipationPromptProps {
@@ -21,38 +22,8 @@ interface ParticipationPromptProps {
   institutionId?: string;
 }
 
-const PROMPT_CONFIG: Record<
-  string,
-  { message: string; cta: string; href: (subjectRef: string, institutionId?: string) => string; icon: "question" | "flag" | "hand-raise" }
-> = {
-  NEVER_ASSESSED: {
-    message: "This information has not been assessed — you can request it.",
-    cta: "Request information",
-    href: (subjectRef, instId) =>
-      instId
-        ? `/participate/foi?institution=${encodeURIComponent(instId)}&subject=${encodeURIComponent(subjectRef)}`
-        : `/participate/foi?subject=${encodeURIComponent(subjectRef)}`,
-    icon: "hand-raise",
-  },
-  NON_RESPONSE: {
-    message: "This institution has not responded — join the demand.",
-    cta: "Join the demand",
-    href: (subjectRef) => `/participate/question?subject=${encodeURIComponent(subjectRef)}`,
-    icon: "question",
-  },
-  DEFAULT: {
-    message: "This information is not publicly available — request it.",
-    cta: "Request it",
-    href: (subjectRef, instId) =>
-      instId
-        ? `/participate/foi?institution=${encodeURIComponent(instId)}&subject=${encodeURIComponent(subjectRef)}`
-        : `/participate/question?subject=${encodeURIComponent(subjectRef)}`,
-    icon: "question",
-  },
-};
-
 function resolvePrompt(missingnessState: string) {
-  return PROMPT_CONFIG[missingnessState] ?? PROMPT_CONFIG.DEFAULT;
+  return PARTICIPATION_PROMPTS[missingnessState] ?? PARTICIPATION_PROMPTS.DEFAULT;
 }
 
 export function ParticipationPrompt({
@@ -61,7 +32,9 @@ export function ParticipationPrompt({
   institutionId,
 }: ParticipationPromptProps) {
   const config = resolvePrompt(missingnessState);
-  const href = config.href(subjectRef, institutionId);
+  const href = institutionId
+    ? `/participate/foi?institution=${encodeURIComponent(institutionId)}&subject=${encodeURIComponent(subjectRef)}`
+    : `/participate/question?subject=${encodeURIComponent(subjectRef)}`;
 
   return (
     <Link

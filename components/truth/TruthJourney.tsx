@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import type { PublicRecord, RecordSection } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
 import { statusEducation } from "@/presentation/status/registry";
+import { resolveAuthorityLabel, UI_COPY } from "@/presentation/copy";
 import { LayeredReveal, type RevealLayer } from "@/components/ui/LayeredReveal";
 import { cn } from "@/lib/cn";
 
@@ -88,11 +89,12 @@ function nearestAuthority(groups: AuthorityGroup[]): AuthorityGroup | undefined 
 
 /** Friendly label for a constitutional authority class. */
 function authorityLabel(className: string): string {
-  if (/constitution/i.test(className)) return "The Constitution";
-  if (/supreme court|judg[e]?ment/i.test(className)) return "Court Judgment";
-  if (/\bact\b/i.test(className)) return "Act of the National Assembly";
-  if (/\blaw\b/i.test(className)) return "State Law";
-  if (/gazette/i.test(className)) return "Official Gazette";
+  // Map regex-matched class names to the copy module's authority keys
+  if (/constitution/i.test(className)) return resolveAuthorityLabel("CONSTITUTION").text;
+  if (/supreme court|judg[e]?ment/i.test(className)) return resolveAuthorityLabel("COURT").text;
+  if (/\bact\b/i.test(className)) return resolveAuthorityLabel("ACT").text;
+  if (/\blaw\b/i.test(className)) return resolveAuthorityLabel("LAW").text;
+  if (/gazette/i.test(className)) return resolveAuthorityLabel("GAZETTE").text;
   return className;
 }
 
@@ -125,8 +127,7 @@ export function TruthJourney({
       body: (
         <Body>
           <p>
-            This answer is published as{" "}
-            <span className="font-bold text-ink">"{label}"</span>.{" "}
+            {UI_COPY.truth_published_as.replace('{label}', label)}{" "}
             {education.narrative}
           </p>
           {section.claim_ref ? (
@@ -176,7 +177,7 @@ export function TruthJourney({
             <p>
               {section.missingness?.explanation ??
                 record.placeholders?.MISSING_FACT?.body ??
-                "The record is honestly silent here — no evidence has been admitted for this answer yet."}
+                UI_COPY.truth_no_evidence_fallback}
             </p>
           )}
         </Body>
@@ -219,9 +220,7 @@ export function TruthJourney({
             </>
           ) : (
             <p>
-              The record does not yet name a governing legal authority for
-              this answer. When authority is admitted as evidence, the
-              nearest constitutional source will appear here.
+              {UI_COPY.truth_no_authority_fallback}
             </p>
           )}
         </Body>
@@ -240,7 +239,7 @@ export function TruthJourney({
             className="pressable-subtle flex min-h-tap w-full items-center justify-between gap-3 py-2.5 text-left"
           >
             <span className="text-[13px] font-semibold text-primary">
-              View the full constitutional record
+              {UI_COPY.truth_view_full_record}
             </span>
             <span className="shrink-0 text-primary">
               <Icon name="arrow-up-right" size={15} strokeWidth={2.4} />

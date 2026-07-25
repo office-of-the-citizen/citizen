@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import type { OfficeHolderData } from "@/presentation/offices/types";
 import { PortraitArt } from "@/presentation/placeholders/art";
 import { Icon } from "@/presentation/icons/Icon";
+import { UI_COPY } from "@/presentation/copy";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Disclosure } from "@/components/ui/Disclosure";
 import { formatDateLong } from "@/lib/format";
@@ -88,10 +89,10 @@ export function OfficeHolderCard({
             ) : (
               <>
                 <h2 className="mt-1.5 text-lg font-bold text-status-unknown">
-                  {holder.missingLabel ?? "Officeholder not yet in the record"}
+                  {holder.missingLabel ?? UI_COPY.officeholder_not_in_record}
                 </h2>
                 <p className="text-sm text-ink-faint">
-                  {holder.missingExplanation ?? "The current occupant will appear here when the constitutional record is compiled."}
+                  {holder.missingExplanation ?? UI_COPY.officeholder_missing_explanation}
                 </p>
               </>
             )}
@@ -102,15 +103,15 @@ export function OfficeHolderCard({
           <div className="mt-4 flex divide-x divide-line border-t border-line pt-3">
             <TermCell
               icon="calendar"
-              label="Assumed Office"
+              label={UI_COPY.assumed_office}
               value={sinceDate}
-              fallback="Date not yet in the record"
+              fallback={UI_COPY.date_not_in_record}
             />
             <TermCell
               icon="calendar"
-              label="Term Ends"
+              label={UI_COPY.term_ends}
               value={termEnd}
-              fallback="Not yet determined"
+              fallback={UI_COPY.not_yet_determined}
             />
           </div>
         ) : null}
