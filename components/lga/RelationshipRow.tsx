@@ -67,6 +67,12 @@ function RelationshipCard({ entry, index, lgaSlug }: { entry: ContextEntry; inde
             className="h-full w-full object-cover object-top"
             loading="lazy"
             onError={() => setPortraitFailed(true)}
+            ref={(node) => {
+              // The markup is server-rendered, so an image can finish failing
+              // before React hydrates and `onError` never fires. On mount,
+              // ask the element whether it already gave up.
+              if (node?.complete && node.naturalWidth === 0) setPortraitFailed(true);
+            }}
           />
         ) : (
           <PortraitArt tone={holder ? (role.blue ? "blue" : "green") : "neutral"} />
