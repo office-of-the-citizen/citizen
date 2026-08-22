@@ -7,8 +7,8 @@
  * the shared discovery store; the map and panels only ever render from it.
  * Progressive disclosure: one layer of information per step, gently animated.
  */
-import { useMemo, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useMemo, useRef, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { NavigationIndex } from "@/sdk/contracts";
@@ -17,17 +17,52 @@ import { NigeriaMap } from "./NigeriaMap";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeRise, springGentle } from "@/presentation/animations/motion";
 import { OfficeEntryCard } from "@/components/offices/OfficeEntryCard";
+import { RecentPlaces } from "./RecentPlaces";
 import { cn } from "@/lib/cn";
 
+/**
+ * `useSearchParams` (deep-linked state) must sit behind a Suspense boundary so
+ * the discovery shell can still be prerendered.
+ */
 export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-surface-sunken" aria-hidden="true" />}>
+      <DiscoveryFlowInner navigation={navigation} />
+    </Suspense>
+  );
+}
+
+function DiscoveryFlowInner({ navigation }: { navigation: NavigationIndex }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { mode, focusedStateId, focusState, clearState, focusLga } = useDiscoveryStore();
+  const [filter, setFilter] = useState("");
 
   const groups = navigation.groups;
   const focusedGroup = useMemo(
     () => groups.find((g) => g.group_object_id === focusedStateId) ?? null,
     [groups, focusedStateId],
   );
+
+  // Deep link: /explore?state=<group_object_id> opens that state directly.
+  const deepLinkState = searchParams.get("state");
+  useEffect(() => {
+    if (!deepLinkState) return;
+    if (!groups.some((g) => g.group_object_id === deepLinkState)) return;
+    focusState(deepLinkState, "DEEP_LINK");
+  }, [deepLinkState, groups, focusState]);
+
+  // A fresh state deserves a fresh list — never inherit the previous filter.
+  useEffect(() => {
+    setFilter("");
+  }, [focusedStateId]);
+
+  const visibleRecords = useMemo(() => {
+    const records = focusedGroup?.records ?? [];
+    const needle = filter.trim().toLowerCase();
+    if (!needle) return records;
+    return records.filter((r) => r.name.toLowerCase().includes(needle));
+  }, [focusedGroup, filter]);
 
   const goToLga = (slug: string, source: "MAP_TAP" | "DROPDOWN") => {
     focusLga(slug, source);
@@ -114,6 +149,7 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
               animate={{ opacity: 1, y: 0, transition: springGentle }}
               exit={{ opacity: 0, y: -8 }}
             >
+              <RecentPlaces className="mb-5" />
               <StateCarousel navigation={navigation} />
               <label className="mt-4 block">
                 <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-faint">
@@ -163,7 +199,7 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
                     <option value="" disabled>
                       Select a Local Government…
                     </option>
-                    {(focusedGroup?.records ?? []).map((r) => (
+                    {visibleRecords.map((r) => (
                       <option key={r.slug} value={r.slug}>
                         {r.name}
                       </option>
@@ -172,8 +208,26 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
                 </SelectShell>
               </label>
 
+              {(focusedGroup?.records.length ?? 0) > 8 ? (
+                <div className="relative mt-3">
+                  <Icon
+                    name="search"
+                    size={16}
+                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-faint"
+                  />
+                  <input
+                    type="search"
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    aria-label={`Filter Local Governments in ${focusedGroup?.group_name ?? ""}`}
+                    placeholder={`Filter ${focusedGroup?.records.length ?? 0} Local Governments…`}
+                    className="w-full rounded-2xl bg-surface py-3 pl-10 pr-4 text-[14px] font-medium text-ink shadow-card outline-none placeholder:text-ink-faint focus:ring-2 focus:ring-primary/40"
+                  />
+                </div>
+              ) : null}
+
               <div className="mt-4 grid grid-cols-2 gap-2 pb-4">
-                {(focusedGroup?.records ?? []).map((r, i) => (
+                {visibleRecords.map((r, i) => (
                   <motion.button
                     key={r.slug}
                     type="button"
@@ -188,6 +242,12 @@ export function DiscoveryFlow({ navigation }: { navigation: NavigationIndex }) {
                   </motion.button>
                 ))}
               </div>
+              {filter.trim() && visibleRecords.length === 0 ? (
+                <p className="pb-6 text-center text-sm text-ink-soft">
+                  No Local Government in {focusedGroup?.group_name} matches “
+                  {filter.trim()}”.
+                </p>
+              ) : null}
             </motion.div>
           )}
         </AnimatePresence>

@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   },
   description:
     "Discover Nigeria, your state, and the constitutional profile of your Local Government.",
+  applicationName: "Your Local Government",
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  // Installed to the home screen, the application IS the screen.
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Your LG" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {

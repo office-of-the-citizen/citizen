@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { clearHomeLga, getHomeLga } from "@/lib/home-storage";
+import { clearRecentPlaces, getRecentPlaces, type RecentPlace } from "@/lib/recent-storage";
 import { AvatarArt } from "@/presentation/placeholders/art";
 import { Icon } from "@/presentation/icons/Icon";
 
 /** Profile v1 — manage the Home Local Government. No accounts, no tracking. */
 export function ProfileClient() {
   const [home, setHome] = useState<{ slug: string; name: string | null } | null>(null);
+  const [recent, setRecent] = useState<RecentPlace[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setHome(getHomeLga());
+    setRecent(getRecentPlaces());
     setLoaded(true);
   }, []);
 
@@ -87,11 +90,96 @@ export function ProfileClient() {
         </div>
       )}
 
+      {/* Constitutional doorways — participation is not buried in a profile. */}
+      <h2 className="mt-7 px-1 text-xs font-bold uppercase tracking-wide text-ink-faint">
+        Your rights
+      </h2>
+      <div className="mt-2 space-y-2">
+        <ProfileRow
+          href="/participate"
+          icon="hand-raise"
+          title="Participate"
+          caption="Ask, request information, contribute or challenge"
+        />
+        <ProfileRow
+          href="/offices"
+          icon="landmark"
+          title="Offices"
+          caption="Who holds power, and what they are responsible for"
+        />
+        <ProfileRow
+          href="/explore"
+          icon="map"
+          title="Explore Nigeria"
+          caption="All 774 Local Governments, state by state"
+        />
+      </div>
+
+      {loaded && recent.length ? (
+        <>
+          <div className="mt-7 flex items-center justify-between px-1">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-ink-faint">
+              Recently viewed
+            </h2>
+            <button
+              type="button"
+              onClick={() => {
+                clearRecentPlaces();
+                setRecent([]);
+              }}
+              className="pressable text-[11px] font-bold uppercase tracking-wide text-ink-faint hover:text-ink-soft"
+            >
+              Clear
+            </button>
+          </div>
+          <div className="mt-2 space-y-2">
+            {recent.map((place) => (
+              <ProfileRow
+                key={place.slug}
+                href={`/lga/${place.slug}`}
+                icon="clock"
+                title={place.name}
+                caption={place.owner ?? "Local Government"}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
+
       <p className="mt-10 text-center text-[10px] leading-relaxed text-ink-faint">
         Every fact in this application is rendered from a governed public record.
         <br />
         Where the record is silent, this application says so.
       </p>
     </div>
+  );
+}
+
+/** One tappable doorway. Same shape everywhere on this screen. */
+function ProfileRow({
+  href,
+  icon,
+  title,
+  caption,
+}: {
+  href: string;
+  icon: "hand-raise" | "landmark" | "map" | "clock";
+  title: string;
+  caption: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="pressable-subtle flex min-h-tap items-center gap-3 rounded-card bg-surface px-4 py-3 shadow-card"
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+        <Icon name={icon} size={16} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[15px] font-bold text-ink">{title}</span>
+        <span className="block truncate text-xs text-ink-soft">{caption}</span>
+      </span>
+      <Icon name="chevron-right" size={16} className="shrink-0 text-ink-faint" />
+    </Link>
   );
 }

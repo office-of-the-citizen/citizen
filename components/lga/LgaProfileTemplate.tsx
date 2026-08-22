@@ -15,6 +15,7 @@ import { CivicJourney } from "./CivicJourney";
 import { StatisticsBar, buildStatisticsCells } from "./StatisticsBar";
 import { populationFromTruth } from "@/lib/truth-facts";
 import { ParticipateCard } from "./ParticipateCard";
+import { RecentVisit } from "./RecentVisit";
 
 /**
  * THE stable Local Government template.
@@ -36,6 +37,10 @@ export function LgaProfileTemplate({
   truth: PublicRecord | null;
 }) {
   const name = truth?.display.subject_name ?? permanent.primary_name;
+  const owner =
+    truth?.display.owner?.name ??
+    breadcrumb.find((b) => b.classification === "STATE")?.primary_name ??
+    null;
   const banner = truth?.vocabulary?.PEOPLE_RESPONSIBLE?.replace("{name}", name);
 
   const pop = populationFromTruth(truth);
@@ -48,6 +53,7 @@ export function LgaProfileTemplate({
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-surface-sunken pb-32">
+      <RecentVisit slug={permanent.slug} name={name} owner={owner} />
       <IdentityHeader permanent={permanent} breadcrumb={breadcrumb} truth={truth} />
 
       {/* Rounded sheet overlapping the hero — white surface per reference */}
@@ -69,7 +75,7 @@ export function LgaProfileTemplate({
           {truth ? (
             <>
               <ChairmanCard record={truth} />
-              <RelationshipRow record={truth} />
+              <RelationshipRow record={truth} lgaSlug={permanent.slug} />
               <BudgetCard record={truth} />
               <AllocationSplitCard />
               <MonthlyAllocationCard record={truth} />

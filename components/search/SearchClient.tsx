@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import type { NavigationIndex, SearchResult } from "@/sdk/contracts";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeRise } from "@/presentation/animations/motion";
+import { RecentPlaces } from "@/components/discovery/RecentPlaces";
 
 interface SearchState {
   status: "idle" | "loading" | "ready" | "unavailable";
@@ -122,16 +123,69 @@ export function SearchClient({ navigation }: { navigation: NavigationIndex }) {
           </motion.div>
         ))}
         {state.status === "ready" && !state.results.length ? (
-          <p className="px-2 pt-6 text-center text-sm text-ink-soft">
-            No public record matches “{query.trim()}”.
-          </p>
+          <div className="px-2 pt-6 text-center">
+            <p className="text-sm text-ink-soft">
+              No public record matches “{query.trim()}”.
+            </p>
+            <BrowseInstead label="Browse Nigeria instead" />
+          </div>
         ) : null}
         {state.status === "unavailable" ? (
-          <p className="px-2 pt-6 text-center text-sm text-ink-soft">
-            Search is temporarily unavailable.
-          </p>
+          <div className="px-2 pt-6 text-center">
+            <p className="text-sm text-ink-soft">
+              Search is temporarily unavailable. Every Local Government can
+              still be reached by browsing the map.
+            </p>
+            <BrowseInstead label="Browse Nigeria" />
+          </div>
         ) : null}
       </div>
+
+      {/* Idle doorways — an empty search box should never be a dead end. */}
+      {state.status === "idle" ? (
+        <div className="mt-6 space-y-6">
+          <RecentPlaces />
+          <StateShortcuts navigation={navigation} />
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+/** A calm doorway back to discovery whenever search has nothing to give. */
+function BrowseInstead({ label }: { label: string }) {
+  return (
+    <Link
+      href="/explore"
+      className="pressable mt-4 inline-flex min-h-tap items-center gap-2 rounded-chip bg-primary-soft px-4 py-2.5 text-[13px] font-bold text-primary-deep"
+    >
+      <Icon name="map" size={15} />
+      {label}
+    </Link>
+  );
+}
+
+/**
+ * Every state, as a shortcut into discovery. Permanent geography only — this
+ * is navigation, not a reconstruction of Engine 11 search.
+ */
+function StateShortcuts({ navigation }: { navigation: NavigationIndex }) {
+  return (
+    <section aria-label="Browse by state">
+      <h2 className="mb-1.5 px-1 text-xs font-bold uppercase tracking-wide text-ink-faint">
+        Browse by state
+      </h2>
+      <div className="flex flex-wrap gap-2">
+        {navigation.groups.map((group) => (
+          <Link
+            key={group.group_object_id}
+            href={`/explore?state=${encodeURIComponent(group.group_object_id)}`}
+            className="pressable min-h-[40px] rounded-chip bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink-soft shadow-card transition-colors duration-quick ease-out active:bg-primary-soft"
+          >
+            {group.group_short_name ?? group.group_name}
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }

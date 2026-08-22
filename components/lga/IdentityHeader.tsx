@@ -9,6 +9,7 @@ import { AvatarArt, HeaderArt, SealArt } from "@/presentation/placeholders/art";
 import { Icon } from "@/presentation/icons/Icon";
 import { fadeIn } from "@/presentation/animations/motion";
 import { HomeAction } from "./HomeAction";
+import { ShareAction } from "./ShareAction";
 
 /**
  * Identity layer — hero imagery, location chip, seal and place name.
@@ -77,6 +78,7 @@ export function IdentityHeader({
             <Icon name="chevron-down" size={14} className="shrink-0 opacity-80" />
           </Link>
           <div className="flex shrink-0 items-center gap-2.5">
+            <ShareAction slug={permanent.slug} name={name} owner={owner} onDark />
             <Link
               href="/search"
               aria-label="Search"

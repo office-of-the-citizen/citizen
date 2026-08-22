@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Office of the Citizen">
+  <rect width="512" height="512" rx="112" fill="#095c33"/>
+  <g fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 132 L372 196 H140 Z"/>
+    <path d="M176 214 V330 M232 214 V330 M280 214 V330 M336 214 V330"/>
+    <path d="M140 366 H372"/>
+  </g>
+</svg>
