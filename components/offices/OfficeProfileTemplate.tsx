@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { OfficeConfig } from "@/presentation/offices/types";
+import { Icon } from "@/presentation/icons/Icon";
 import { OfficeIdentityHeader } from "./OfficeIdentityHeader";
 import { OfficeHolderCard } from "./OfficeHolderCard";
 import { ResponsibilitiesSection } from "./ResponsibilitiesSection";
@@ -23,9 +25,32 @@ import { RightToKnowCard } from "./RightToKnowCard";
  * When CAOS Engine begins projecting office records, the template will
  * consume them identically to how LgaProfileTemplate consumes LGA records.
  */
-export function OfficeProfileTemplate({ office }: { office: OfficeConfig }) {
+export function OfficeProfileTemplate({
+  office,
+  lgaContext,
+}: {
+  office: OfficeConfig;
+  lgaContext?: { name: string; slug: string; district?: string } | null;
+}) {
   return (
     <div className="mx-auto min-h-screen w-full max-w-md bg-surface-sunken pb-32">
+      {/* LGA context banner — shows when citizen navigated from an LGA page */}
+      {lgaContext ? (
+        <div className="bg-surface px-4 pb-2 pt-safe-t">
+          <Link
+            href={`/lga/${lgaContext.slug}`}
+            className="pressable-subtle mt-2 flex items-center gap-2 rounded-chip bg-surface-sunken px-3 py-1.5 text-[12px] text-ink-soft transition-colors duration-quick ease-out hover:text-ink"
+          >
+            <Icon name="chevron-left" size={14} className="shrink-0" />
+            <span>
+              Viewing from{" "}
+              <span className="font-bold text-ink">{lgaContext.name}</span>
+              {lgaContext.district ? ` — ${lgaContext.district}` : ""}
+            </span>
+          </Link>
+        </div>
+      ) : null}
+
       <OfficeIdentityHeader office={office} />
 
       {/* Rounded sheet overlapping the hero — white surface per reference */}

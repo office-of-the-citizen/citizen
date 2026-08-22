@@ -119,6 +119,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
+      portrait_url: null,
     },
     {
       provider: "OWNER_EXECUTIVE_HEAD",
@@ -133,6 +134,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
+      portrait_url: null,
     },
     {
       provider: "STATE_ASSEMBLY_REPRESENTATION",
@@ -147,6 +149,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
+      portrait_url: null,
     },
     {
       provider: "FEDERAL_CONSTITUENCY_REPRESENTATION",
@@ -161,6 +164,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
+      portrait_url: null,
     },
     {
       provider: "SENATORIAL_REPRESENTATION",
@@ -175,6 +179,7 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
+      portrait_url: null,
     },
   ],
   civic_journey: [],
