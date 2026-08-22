@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -41,8 +42,13 @@ function RelationshipCard({ entry, index, lgaSlug }: { entry: ContextEntry; inde
   const holder = entry.display_name ?? null;
   const recognised = Boolean(entry.person_id);
   const role = osRole(entry.presentation?.accent_role);
-  const portraitUrl = portraitLocator(entry);
   const officeUrl = resolveOfficeUrl(entry, lgaSlug);
+  // A locator can be unreachable from where the citizen stands — CAOS has
+  // emitted host-absolute portrait URLs. A broken image is worse than the
+  // designed absence, so a failed load falls back to the placeholder.
+  const [portraitFailed, setPortraitFailed] = useState(false);
+  const locator = portraitLocator(entry);
+  const portraitUrl = portraitFailed ? null : locator;
 
   const card = (
     <motion.div
@@ -60,6 +66,7 @@ function RelationshipCard({ entry, index, lgaSlug }: { entry: ContextEntry; inde
             alt={holder || entry.label}
             className="h-full w-full object-cover object-top"
             loading="lazy"
+            onError={() => setPortraitFailed(true)}
           />
         ) : (
           <PortraitArt tone={holder ? (role.blue ? "blue" : "green") : "neutral"} />
