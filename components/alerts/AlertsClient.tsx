@@ -15,6 +15,7 @@ import { getHomeLga } from "@/lib/home-storage";
 import { getRecentPlaces, type RecentPlace } from "@/lib/recent-storage";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/presentation/icons/Icon";
+import { UI_COPY } from "@/presentation/copy";
 
 export function AlertsClient() {
   const [home, setHome] = useState<{ slug: string; name: string | null } | null>(null);
@@ -35,7 +36,7 @@ export function AlertsClient() {
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-surface-sunken px-4 pb-32 pt-safe-t">
       <h1 className="pt-8 text-2xl font-extrabold tracking-display text-ink">Alerts</h1>
       <p className="mt-1 text-sm text-ink-soft">
-        Changes to the public record of the places you follow.
+        {UI_COPY.alerts_subtitle}
       </p>
 
       {!loaded ? null : (
@@ -43,34 +44,33 @@ export function AlertsClient() {
           <EmptyState
             icon="alerts"
             tone="primary"
-            title="Quiet, for now"
-            body="When a Local Government you follow changes — a budget admitted, a chairman changed, a project updated — you’ll hear about it here. Nothing is invented in the meantime."
+            title={UI_COPY.alerts_empty_title}
+            body={UI_COPY.alerts_empty_body}
             className="mt-12"
           />
 
           <section className="mt-12" aria-label="What you are following">
             <h2 className="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-ink-faint">
-              You’re following
+              {UI_COPY.alerts_following_heading}
             </h2>
 
             {home ? (
               <FollowRow
                 slug={home.slug}
                 name={home.name ?? home.slug}
-                caption="Your Home Local Government"
+                caption={UI_COPY.alerts_home_caption}
                 icon="home"
               />
             ) : (
               <div className="rounded-card bg-surface p-4 shadow-card">
                 <p className="text-sm text-ink-soft">
-                  Choose a Home Local Government and it will be the first place
-                  you hear about.
+                  {UI_COPY.alerts_choose_home_body}
                 </p>
                 <Link
                   href="/explore"
                   className="pressable mt-3 flex min-h-tap items-center justify-center rounded-chip bg-primary py-2.5 text-center text-[13px] font-bold text-white"
                 >
-                  Discover where you belong
+                  {UI_COPY.alerts_discover_cta}
                 </Link>
               </div>
             )}
@@ -82,7 +82,7 @@ export function AlertsClient() {
                     key={place.slug}
                     slug={place.slug}
                     name={place.name}
-                    caption={place.owner ?? "Recently opened"}
+                    caption={place.owner ?? UI_COPY.alerts_recently_opened_caption}
                     icon="clock"
                   />
                 ))}
@@ -99,10 +99,10 @@ export function AlertsClient() {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-[15px] font-bold text-ink">
-                Waiting is not the only option
+                {UI_COPY.alerts_participation_title}
               </span>
               <span className="mt-0.5 block text-[13px] leading-relaxed text-ink-soft">
-                Ask a question or request information — and the record changes.
+                {UI_COPY.alerts_participation_body}
               </span>
             </span>
             <Icon name="chevron-right" size={16} className="shrink-0 text-ink-faint" />

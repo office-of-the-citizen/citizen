@@ -121,6 +121,18 @@ export const UI_COPY: Record<string, string> = {
   truth_no_authority_fallback: 'The record does not yet name a governing legal authority for this answer. When authority is admitted as evidence, the nearest constitutional source will appear here.',
   truth_view_full_record: 'View the full constitutional record',
   officeholder_missing_explanation: 'The current occupant will appear here when the constitutional record is compiled.',
+
+  // Alerts screen
+  alerts_subtitle: 'Changes to the public record of the places you follow.',
+  alerts_empty_title: 'Quiet, for now',
+  alerts_empty_body: 'When a Local Government you follow changes — a budget admitted, a chairman changed, a project updated — you’ll hear about it here. Nothing is invented in the meantime.',
+  alerts_following_heading: 'You’re following',
+  alerts_home_caption: 'Your Home Local Government',
+  alerts_choose_home_body: 'Choose a Home Local Government and it will be the first place you hear about.',
+  alerts_discover_cta: 'Discover where you belong',
+  alerts_recently_opened_caption: 'Recently opened',
+  alerts_participation_title: 'Waiting is not the only option',
+  alerts_participation_body: 'Ask a question or request information — and the record changes.',
 };
 
 /** Participation prompt configs — civic actions shown at points of silence. */
