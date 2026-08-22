@@ -19,6 +19,7 @@ import * as path from "path";
 
 import { CaosClient } from "@office-of-the-citizen/caos-sdk";
 
+import { withPortraits } from "@/lib/portrait-carry";
 import {
   NavigationIndexSchema,
   PublicRecordSchema,
@@ -57,7 +58,7 @@ class FileProjectionSource implements ProjectionSource {
     );
     if (raw === null) return null;
     const parsed = PublicRecordSchema.safeParse(raw);
-    return parsed.success ? parsed.data : null;
+    return parsed.success ? withPortraits(parsed.data, raw) : null;
   }
 
   async getNavigation(recordType: string): Promise<NavigationIndex | null> {
@@ -96,7 +97,7 @@ class SdkProjectionSource implements ProjectionSource {
         console.error("[citizen] PublicRecord schema rejected", slug, parsed.error.issues[0]);
         return null;
       }
-      return parsed.data;
+      return withPortraits(parsed.data, raw);
     } catch (err) {
       console.error("[citizen] getRecord failed", slug, err instanceof Error ? err.message : err);
       return null;
