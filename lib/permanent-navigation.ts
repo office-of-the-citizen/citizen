@@ -5,7 +5,7 @@
  * The SDK distributes the snapshot; this app decides how to shape it for UI.
  */
 
-import { lgaNavigationTree } from "@office-of-the-citizen/caos-sdk";
+import { getPermanentSnapshotMeta, lgaNavigationTree } from "@office-of-the-citizen/caos-sdk";
 import type { NavigationIndex } from "@/sdk/contracts";
 
 /** Build a NavigationIndex from the SDK permanent snapshot (no network). */
@@ -13,7 +13,7 @@ export function navigationFromPermanentSnapshot(): NavigationIndex {
   const tree = lgaNavigationTree();
   return {
     record_type: "lga",
-    built_at: new Date(0).toISOString(),
+    built_at: getPermanentSnapshotMeta()?.generated_at ?? new Date(0).toISOString(),
     groups: tree.map(({ state, lgas }) => ({
       group_object_id: state.canonical_id,
       group_name: state.primary_name,

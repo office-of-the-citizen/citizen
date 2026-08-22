@@ -47,7 +47,7 @@ test("a malformed payload never throws", () => {
   assert.doesNotThrow(() => withPortraits({ context: [] }, { context: "nonsense" }));
 });
 
-test("the pinned schema really does strip the field (the bug this guards)", (t) => {
+test("a portrait survives whatever contract happens to be installed", (t) => {
   // A real emitted projection, so the fixture cannot drift from the contract.
   const file = new URL(
     "../../CAOS/runtime/state/projections/prj_public_record/lga/lg-ab-aba-north.json",
@@ -57,17 +57,30 @@ test("the pinned schema really does strip the field (the bug this guards)", (t) 
 
   const raw = JSON.parse(readFileSync(file, "utf8"));
   const parsed = PublicRecordSchema.safeParse(raw);
-  assert.ok(parsed.success, "the emitted record should satisfy the pinned contract");
+  assert.ok(parsed.success, "the emitted record should satisfy the installed contract");
 
   const rawRel = raw.context.find(
     (e) => e.layout_slot === "RELATIONSHIPS" && typeof e.portrait_url === "string",
   );
   if (!rawRel) return t.skip("no portrait in this record to carry");
-
   const index = raw.context.indexOf(rawRel);
-  // If this ever fails, the pin advanced — delete lib/portrait-carry and this test.
-  assert.equal(parsed.data.context[index].portrait_url, undefined);
 
+  // The point of the repair: whether or not the installed contract declares
+  // `portrait_url`, a locator the OS published is present after the carry.
+  // Asserting only this keeps the test true under the pinned SDK *and* under
+  // a newer local build — the drift between those two is what caused the bug.
   const carried = withPortraits(parsed.data, raw);
   assert.equal(carried.context[index].portrait_url, rawRel.portrait_url);
+});
+
+test("the repair is still needed — or can be deleted", () => {
+  const declares = "portrait_url" in PublicRecordSchema.shape.context.element.shape;
+  // Informational, never a failure: when the pin advances so that every
+  // environment declares the field, lib/portrait-carry can be removed.
+  console.log(
+    declares
+      ? "[note] installed contract declares portrait_url — lib/portrait-carry is removable once the PIN (not just node_modules) advances"
+      : "[note] installed contract strips portrait_url — lib/portrait-carry is load-bearing",
+  );
+  assert.ok(typeof declares === "boolean");
 });
