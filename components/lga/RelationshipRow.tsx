@@ -7,6 +7,7 @@ import type { ContextEntry, PublicRecord } from "@/sdk/contracts";
 import { PortraitArt } from "@/presentation/placeholders/art";
 import { osRole } from "@/presentation/os-visuals";
 import { resolveOfficeUrl } from "@/presentation/offices/resolve";
+import { portraitLocator } from "@/presentation/offices/portrait";
 import { ConstitutionalMark } from "@/components/shared/ConstitutionalMark";
 import { fadeRise } from "@/presentation/animations/motion";
 import { cn } from "@/lib/cn";
@@ -40,7 +41,7 @@ function RelationshipCard({ entry, index, lgaSlug }: { entry: ContextEntry; inde
   const holder = entry.display_name ?? null;
   const recognised = Boolean(entry.person_id);
   const role = osRole(entry.presentation?.accent_role);
-  const portraitUrl = entry.portrait_url;
+  const portraitUrl = portraitLocator(entry);
   const officeUrl = resolveOfficeUrl(entry, lgaSlug);
 
   const card = (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getBySlug } from "@office-of-the-citizen/caos-sdk";
 import type { ContextEntry } from "@office-of-the-citizen/caos-sdk";
+import { portraitLocator } from "@/presentation/offices/portrait";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -91,7 +92,7 @@ export default async function OfficeProfilePage({ params, searchParams }: Params
           if (entry?.display_name) {
             projectedHolder = {
               name: entry.display_name,
-              portrait: entry.portrait_url ?? null,
+              portrait: portraitLocator(entry),
               party: entry.party?.name ?? undefined,
               detail: entry.detail ?? undefined,
             };

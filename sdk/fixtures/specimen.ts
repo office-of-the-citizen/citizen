@@ -105,6 +105,12 @@ export const SPECIMEN_RECORD: PublicRecord = {
       evidence: null,
     },
   },
+  /**
+   * Cast, deliberately: `portrait_url` exists on RELATIONSHIPS entries emitted
+   * by CAOS but was added to the contract after the SDK tag this application
+   * pins, so a fresh object literal cannot satisfy both shapes. See
+   * `presentation/offices/portrait.ts`.
+   */
   context: [
     {
       provider: "FEDERAL_EXECUTIVE_HEAD",
@@ -119,7 +125,6 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
-      portrait_url: null,
     },
     {
       provider: "OWNER_EXECUTIVE_HEAD",
@@ -134,7 +139,6 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
-      portrait_url: null,
     },
     {
       provider: "STATE_ASSEMBLY_REPRESENTATION",
@@ -149,7 +153,6 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
-      portrait_url: null,
     },
     {
       provider: "FEDERAL_CONSTITUENCY_REPRESENTATION",
@@ -164,7 +167,6 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
-      portrait_url: null,
     },
     {
       provider: "SENATORIAL_REPRESENTATION",
@@ -179,9 +181,8 @@ export const SPECIMEN_RECORD: PublicRecord = {
       badge: REPO_BADGE,
       missingness: null,
       source_references: [],
-      portrait_url: null,
     },
-  ],
+  ] as unknown as PublicRecord["context"],
   civic_journey: [],
   budget: {
     posture: "APPROVED_LATEST",
