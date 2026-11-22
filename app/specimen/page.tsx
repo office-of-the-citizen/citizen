@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { breadcrumb, getBySlug } from "@office-of-the-citizen/caos-sdk";
 
 import { SPECIMEN_RECORD } from "@/sdk/fixtures/specimen";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function SpecimenPage() {
+  if (process.env.NODE_ENV === "production") notFound();
   const permanent =
     getBySlug(SPECIMEN_RECORD.slug) ??
     getBySlug("lg-oy-ibadan-north") ??

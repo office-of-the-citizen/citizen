@@ -36,6 +36,26 @@ export const MISSINGNESS: Record<string, { explanation: string; reason: string }
     explanation: 'No answer exists for this specific time period.',
     reason: 'The record covers other periods, but no evidence addresses this particular moment.',
   },
+  NON_RESPONSE: {
+    explanation: 'An obligated actor did not answer within the required time.',
+    reason: 'The institution or office was required to respond by law, but the statutory clock expired without a response.',
+  },
+  NON_PUBLICATION: {
+    explanation: 'A document that should have been published was never published.',
+    reason: 'The law requires this document to be published, but no published version has been recorded.',
+  },
+  VACANCY: {
+    explanation: 'An office with no current mandate holder.',
+    reason: 'No active mandate episode covers this office. The position is currently without a governed holder.',
+  },
+  CONTESTED_VOID: {
+    explanation: 'Rival claims exist; resolution has not been reached.',
+    reason: 'Two or more competing claims have been recorded for this office or right. The constitutional record preserves all positions until resolution.',
+  },
+  INVESTIGATED_UNKNOWN: {
+    explanation: 'Investigation was conducted; nothing was found.',
+    reason: 'A governed investigation took place but did not produce a confirmed finding.',
+  },
 };
 
 /** Verification outcome explanations — citizen-facing language for verification postures. */
@@ -121,6 +141,15 @@ export const UI_COPY: Record<string, string> = {
   truth_no_authority_fallback: 'The record does not yet name a governing legal authority for this answer. When authority is admitted as evidence, the nearest constitutional source will appear here.',
   truth_view_full_record: 'View the full constitutional record',
   officeholder_missing_explanation: 'The current occupant will appear here when the constitutional record is compiled.',
+  workspace_offices_title: 'Public offices',
+  workspace_offices_unavailable: 'Open a Local Government record to see the officeholders published by CAOS. Detailed office profiles are not yet published.',
+  workspace_explore: 'Explore Local Governments',
+  workspace_office_unavailable: 'An officeholder record is unavailable for this context.',
+  workspace_profile_unavailable: 'Published by CAOS. Detailed office profile unavailable.',
+  workspace_back: 'Back to Local Governments',
+  workspace_participation_unavailable: 'Online participation is unavailable while the CAOS workflow is disconnected.',
+  workspace_public_records: 'Explore public records',
+  workspace_watch_unavailable: 'Watch updates unavailable',
 };
 
 /** Participation prompt configs — civic actions shown at points of silence. */

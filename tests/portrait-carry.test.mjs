@@ -50,7 +50,7 @@ test("a malformed payload never throws", () => {
 test("a portrait survives whatever contract happens to be installed", (t) => {
   // A real emitted projection, so the fixture cannot drift from the contract.
   const file = new URL(
-    "../../CAOS/runtime/state/projections/prj_public_record/lga/lg-ab-aba-north.json",
+    "../../0. CAOS/runtime/state/projections/prj_public_record/lga/lg-ab-aba-north.json",
     import.meta.url,
   );
   if (!existsSync(file)) return t.skip("CAOS projections not present on this machine");

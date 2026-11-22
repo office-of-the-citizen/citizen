@@ -21,7 +21,7 @@ const appDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
 let projectionDir = process.env.CAOS_PROJECTION_DIR;
 if (!projectionDir) {
-  const directSibling = path.resolve(appDir, "..", "CAOS", "runtime", "state", "projections");
+  const directSibling = path.resolve(appDir, "..", "0. CAOS", "runtime", "state", "projections");
   if (fs.existsSync(directSibling)) {
     projectionDir = directSibling;
   } else {

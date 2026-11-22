@@ -7,15 +7,11 @@
  *   CAOS_GATEWAY_URL                → gateway root (required on Vercel/prod)
  *   NEXT_PUBLIC_CAOS_GATEWAY_URL    → accepted fallback if CAOS_GATEWAY_URL unset
  *   CAOS_PROJECTION_API_URL         → legacy alias (gateway root; /api/v1/public stripped)
- *   CAOS_PROJECTION_DIR              → EXPLICIT opt-in file transport (never default)
  *   Local default http://localhost:4000 only when not on Vercel/production.
  *
- * The application NEVER writes to either transport and never imports
- * operating-system code.
+ * The application reads only published SDK snapshots and gateway responses.
  */
 import "server-only";
-import * as fs from "fs";
-import * as path from "path";
 
 import { CaosClient } from "@office-of-the-citizen/caos-sdk";
 
@@ -38,40 +34,6 @@ export interface ProjectionSource {
    * unavailable state, never a reconstructed search of its own.
    */
   search(query: string, options?: { limit?: number }): Promise<SearchResponse | null>;
-}
-
-class FileProjectionSource implements ProjectionSource {
-  constructor(private readonly rootDir: string) {}
-
-  private readJson(file: string): unknown | null {
-    try {
-      return JSON.parse(fs.readFileSync(file, "utf-8"));
-    } catch {
-      return null;
-    }
-  }
-
-  async getRecord(recordType: string, slug: string): Promise<PublicRecord | null> {
-    if (!/^[a-z0-9-]+$/.test(slug) || !/^[a-z0-9_-]+$/.test(recordType)) return null;
-    const raw = this.readJson(
-      path.join(this.rootDir, "prj_public_record", recordType, `${slug}.json`),
-    );
-    if (raw === null) return null;
-    const parsed = PublicRecordSchema.safeParse(raw);
-    return parsed.success ? withPortraits(parsed.data, raw) : null;
-  }
-
-  async getNavigation(recordType: string): Promise<NavigationIndex | null> {
-    if (!/^[a-z0-9_-]+$/.test(recordType)) return null;
-    const raw = this.readJson(path.join(this.rootDir, "prj_navigation", `${recordType}.json`));
-    if (raw === null) return null;
-    const parsed = NavigationIndexSchema.safeParse(raw);
-    return parsed.success ? parsed.data : null;
-  }
-
-  async search(): Promise<SearchResponse | null> {
-    return null; // Engine 11 lives behind the gateway; file mode cannot search.
-  }
 }
 
 /**
@@ -173,11 +135,6 @@ export function resolveGatewayUrl(env: NodeJS.ProcessEnv = process.env): string 
 
 export function projectionSource(): ProjectionSource {
   if (cached) return cached;
-  const dir = process.env.CAOS_PROJECTION_DIR;
-  if (dir) {
-    cached = new FileProjectionSource(dir);
-    return cached;
-  }
   const gatewayUrl = resolveGatewayUrl();
   cached = new SdkProjectionSource(gatewayUrl);
   return cached;
