@@ -2,6 +2,9 @@ name: Update caos-sdk package
 
 # Whenever caos-sdk publishes a new version, pin this repo to that git tag.
 on:
+  push:
+    branches: [main]
+  pull_request:
   repository_dispatch:
     types: [sdk-released]
   schedule:
@@ -21,7 +24,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  verify:
+    name: Typecheck and independent production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+        env:
+          CAOS_GATEWAY_URL: http://127.0.0.1:4000
+
   update:
+    if: github.event_name != 'push' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
