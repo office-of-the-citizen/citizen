@@ -150,6 +150,16 @@ export const UI_COPY: Record<string, string> = {
   workspace_participation_unavailable: 'Online participation is unavailable while the CAOS workflow is disconnected.',
   workspace_public_records: 'Explore public records',
   workspace_watch_unavailable: 'Watch updates unavailable',
+  alerts_subtitle: 'Changes to the public record of the places you follow.',
+  alerts_empty_title: 'Quiet, for now',
+  alerts_empty_body: 'Record changes will appear here when CAOS publishes updates.',
+  alerts_following_heading: 'You’re following',
+  alerts_home_caption: 'Your Home Local Government',
+  alerts_choose_home_body: 'Choose a Home Local Government to keep it close.',
+  alerts_discover_cta: 'Discover where you belong',
+  alerts_recently_opened_caption: 'Recently opened',
+  alerts_participation_title: 'Participation',
+  alerts_participation_body: 'Online participation is currently unavailable.',
 };
 
 /** Participation prompt configs — civic actions shown at points of silence. */

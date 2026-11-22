@@ -1,0 +1,242 @@
+{
+  "record_type": "lga",
+  "subject_object_id": "ute:obj:c35336b2-e658-5216-b569-6f09c3e99317",
+  "slug": "c35336b2-e658-5216-b569-6f09c3e99317",
+  "layout_template": "lga-standard",
+  "layout_order": [
+    "identity",
+    "chairman",
+    "representatives",
+    "budget",
+    "population"
+  ],
+  "display": {
+    "subject_name": "Kunchi",
+    "subject_kind": "LOCAL_GOVERNMENT_AREA",
+    "subject_icon_glyph": "building",
+    "breadcrumb": [
+      {
+        "object_id": "ute:obj:ng",
+        "name": "Nigeria"
+      },
+      {
+        "object_id": "ute:obj:kn",
+        "name": "Kano State"
+      },
+      {
+        "object_id": "ute:obj:c35336b2-e658-5216-b569-6f09c3e99317",
+        "name": "Kunchi"
+      }
+    ],
+    "owner": {
+      "object_id": "ute:obj:kn",
+      "name": "Kano State"
+    }
+  },
+  "sections": {
+    "chairman": {
+      "section_code": "chairman",
+      "question": "What is the chairman?",
+      "display_label": "Chairman",
+      "layout_slot": "chairman",
+      "projection_form": "scalar",
+      "claim_ref": null,
+      "valid_from": "2026-08-22",
+      "valid_to": null,
+      "answer": {
+        "kind": "scalar",
+        "value": "Hashimu Mai sabulu",
+        "display_name": "Hashimu Mai sabulu",
+        "portrait": null
+      },
+      "missingness": null,
+      "verification": null,
+      "badge": {
+        "badge_code": "PENDING",
+        "label": "Pending",
+        "colour_role": "pending",
+        "colour_hex": "#d97706",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "evidence": null
+    }
+  },
+  "context": [
+    {
+      "provider": "caos-engine-10",
+      "label": "State",
+      "layout_slot": "meta",
+      "presentation": null,
+      "data_origin": "projection",
+      "person_id": null,
+      "display_name": "Kano State",
+      "party": null,
+      "detail": "State affiliation",
+      "badge": {
+        "badge_code": "GOVERNED_OBJECT",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#6b7280",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": []
+    },
+    {
+      "provider": "caos-engine-10",
+      "label": "Source",
+      "layout_slot": "meta",
+      "presentation": null,
+      "data_origin": "projection",
+      "person_id": null,
+      "display_name": "Compiled from Knowledge Units",
+      "party": null,
+      "detail": "Live data from CAOS extraction pipeline",
+      "badge": {
+        "badge_code": "GOVERNED_OBJECT",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#6b7280",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": []
+    },
+    {
+      "provider": "caos-source-data",
+      "label": "President",
+      "layout_slot": "RELATIONSHIPS",
+      "presentation": {
+        "icon": "president",
+        "accent_role": "executive",
+        "accent_hex": "#059669"
+      },
+      "data_origin": "REPOSITORY_REFERENCE",
+      "person_id": "ute:person:president",
+      "display_name": "Bola Ahmed Tinubu",
+      "party": null,
+      "detail": "President of Nigeria",
+      "badge": {
+        "badge_code": "REPOSITORY_REFERENCE",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#2563eb",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": [
+        "currentaffairs_ng"
+      ],
+      "portrait_url": "http://localhost:4000/api/v1/public/portraits/tinubu.jpg?v=2"
+    },
+    {
+      "provider": "caos-source-data",
+      "label": "Governor",
+      "layout_slot": "RELATIONSHIPS",
+      "presentation": {
+        "icon": "governor",
+        "accent_role": "executive",
+        "accent_hex": "#059669"
+      },
+      "data_origin": "REPOSITORY_REFERENCE",
+      "person_id": "ute:person:governor:kn",
+      "display_name": "Abba Kabir Yusuf",
+      "party": {
+        "party_id": "apc",
+        "name": "APC",
+        "acronym": "APC"
+      },
+      "detail": "Governor of Kano State",
+      "badge": {
+        "badge_code": "REPOSITORY_REFERENCE",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#2563eb",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": [
+        "currentaffairs_ng"
+      ],
+      "portrait_url": "https://currentaffairs.ng/wp-content/uploads/2023/10/Abba-Kabir-Yusuf.png"
+    },
+    {
+      "provider": "caos-source-data",
+      "label": "Senator",
+      "layout_slot": "RELATIONSHIPS",
+      "presentation": {
+        "icon": "senator",
+        "accent_role": "legislative",
+        "accent_hex": "#2563eb"
+      },
+      "data_origin": "REPOSITORY_REFERENCE",
+      "person_id": "ute:person:senator:kano-north",
+      "display_name": "Barau Jibrin",
+      "party": null,
+      "detail": "Kano North",
+      "badge": {
+        "badge_code": "REPOSITORY_REFERENCE",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#2563eb",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": [
+        "currentaffairs_ng"
+      ],
+      "portrait_url": "https://currentaffairs.ng/wp-content/uploads/2023/10/Barau-Jibrin.png"
+    },
+    {
+      "provider": "caos-source-data",
+      "label": "Representative",
+      "layout_slot": "RELATIONSHIPS",
+      "presentation": {
+        "icon": "representative",
+        "accent_role": "legislative",
+        "accent_hex": "#2563eb"
+      },
+      "data_origin": "REPOSITORY_REFERENCE",
+      "person_id": "ute:person:rep:tsanyawa-kunchi",
+      "display_name": "Sani Bala Umar",
+      "party": null,
+      "detail": "Tsanyawa/Kunchi",
+      "badge": {
+        "badge_code": "REPOSITORY_REFERENCE",
+        "label": "Reference",
+        "colour_role": "reference",
+        "colour_hex": "#2563eb",
+        "surface_mark": "•",
+        "surface_mark_treatment": "muted"
+      },
+      "missingness": null,
+      "source_references": [
+        "currentaffairs_ng"
+      ],
+      "portrait_url": null
+    }
+  ],
+  "civic_journey": [],
+  "placeholders": {},
+  "vocabulary": {
+    "PEOPLE_RESPONSIBLE": "People responsible for {name}"
+  },
+  "provenance": {
+    "built_at": "2026-08-22T07:27:53.375Z",
+    "build_input_hash": "sha256:direct-compile",
+    "projection_version": 1,
+    "builder": "caos-direct-compiler"
+  },
+  "identity": {
+    "header": null,
+    "logo": null,
+    "facts": []
+  },
+  "budget": null
+}

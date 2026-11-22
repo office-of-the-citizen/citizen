@@ -2,13 +2,13 @@
   "name": "caos-citizen-lga",
   "version": "0.1.0",
   "private": true,
-  "description": "Citizen Application v1 \u2014 independent projection renderer for CAOS constitutional truth. Consumes projections only; never generates constitutional truth.",
+  "description": "Citizen Application v1 — independent projection renderer for CAOS constitutional truth. Consumes projections only; never generates constitutional truth.",
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start -p 3100",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --no-warnings --test \"tests/*.test.mjs\""
+    "test": "node --experimental-strip-types --no-warnings --test \"tests/*.test.mjs\" \"tests/*.test.ts\""
   },
   "dependencies": {
     "@svg-maps/nigeria": "^2.0.0",
@@ -21,7 +21,7 @@
     "tailwind-merge": "^2.3.0",
     "zod": "^3.22.0",
     "zustand": "^4.5.0",
-    "@office-of-the-citizen/caos-sdk": "file:../2. SDK"
+    "@office-of-the-citizen/caos-sdk": "github:office-of-the-citizen/caos-sdk#v0.6.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
